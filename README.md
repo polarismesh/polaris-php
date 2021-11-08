@@ -27,7 +27,7 @@ Polaris-php provide features listed as below:
 
 ### Build Polaris-PHP
 
-You can see this document to build polaris-php: [BuildDoc](doc/ApiDoc.md)
+You can see this document to build polaris-php: [BuildDoc](doc/HowToBuild.md)
 
 ### Using API
 
