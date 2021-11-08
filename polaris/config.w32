@@ -1,0 +1,13 @@
+// $Id$
+// vim:ft=javascript
+
+// If your extension references something external, use ARG_WITH
+// ARG_WITH("polaris", "for polaris support", "no");
+
+// Otherwise, use ARG_ENABLE
+// ARG_ENABLE("polaris", "enable polaris support", "no");
+
+if (PHP_POLARIS != "no") {
+	EXTENSION("polaris", "polaris.cpp");
+}
+
