@@ -1,48 +1,38 @@
-# Polaris SDK FOR PHP
-
-## Polaris Provider
-### How to build
+# polaris-php
 
 
-#### Build Polaris CPP
+Polaris is an operation centre that supports multiple programming languages, with high compatibility to different application framework. Polaris-php is php SDK for Polaris.
 
-> Clone Polaris CPP
+## Overview
 
-> Copy lib so
-#### Build Polaris PHP
+Polaris-php provide features listed as below:
 
-> PHP 5.6.40
+* *Service instance registration, and health check*
+   
+   Provides API on/offline registration instance information,  with regular report to inform caller server's healthy status. 
 
-```shell
+* *Service discovery* 
+ 
+   Provides multiple API, for users to get a full list of server instance, or get one server instance after route rule filtering and loadbalancing, which can be applied to srevice invocation soon.
 
-cd ./polaris_provider
-# clean last build info
-phpize --clean 
+* *Service circuitbreaking* 
+   
+   Provide API to report the invocation result, and conduct circuit breaker instance/group insolation based on collected data, eventually recover when the system allows. 
 
-phpize
+* *Service ratelimiting* 
 
-./configure  --with-php-config=/usr/local/php56/bin/php-config  --with-polaris_provider
+   Provides API for applications to conduct quota check and deduction, supports rate limit  policies that are based on server level and port.
 
-make && make install
-```
+## Quick Guide
 
+### Build Polaris-PHP
 
-## Polaris Consumer
-### How to build
+You can see this document to build polaris-php: [BuildDoc](doc/ApiDoc.md)
 
-#### command
+### Using API
 
-> PHP 5.6.40
+API use guide，can reference：[ApiDoc](doc/ApiDoc.md)
 
-```shell
+### Example
 
-cd ./polaris_consumer
-# clean last build info
-phpize --clean 
-
-phpize
-
-./configure  --with-php-config=/usr/local/php56/bin/php-config  --with-polaris_provider
-
-make && make install
-```
+API quick start guide，can reference：[QuickStart](example)

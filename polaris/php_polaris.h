@@ -41,7 +41,6 @@ extern zend_module_entry polaris_module_entry;
 /* 
   	Declare any global variables you may need between the BEGIN
 	and END macros here:     
-
 ZEND_BEGIN_MODULE_GLOBALS(polaris)
 	long  global_value;
 	char *global_string;
@@ -64,31 +63,37 @@ ZEND_END_MODULE_GLOBALS(polaris)
 #define POLARIS_G(v) (polaris_globals.v)
 #endif
 
-PHP_METHOD(PolarisClient, __construct) ;
+// __construct PolarisClient 的构造函数定义
+PHP_METHOD(PolarisClient, __construct);
+// InitProvider 初始化 Polaris 的 Provider 功能
 PHP_METHOD(PolarisClient, InitProvider);
+// InitConsumer 初始化 Polaris 的 Consumer 功能
 PHP_METHOD(PolarisClient, InitConsumer);
-PHP_METHOD(PolarisClient, InitLimit)   ;
+// InitLimit 初始化 Polaris 的 Limit 功能
+PHP_METHOD(PolarisClient, InitLimit);
 
 // Provider
-PHP_METHOD(PolarisClient, Register)  ;
+// 必须要先执行 InitProvider 才可以执行
+PHP_METHOD(PolarisClient, Register);
 PHP_METHOD(PolarisClient, Deregister);
-PHP_METHOD(PolarisClient, Heartbeat) ;
-PHP_METHOD(PolarisClient, Heartbeat) ;
+PHP_METHOD(PolarisClient, Heartbeat);
 
 // Consumer
-PHP_METHOD(PolarisClient, InitService)            ;
-PHP_METHOD(PolarisClient, GetOneInstance)         ;
-PHP_METHOD(PolarisClient, GetInstances)           ;
-PHP_METHOD(PolarisClient, GetAllInstances)        ;
+// 必须要先执行 InitConsumer 才可以执行
+PHP_METHOD(PolarisClient, InitService);
+PHP_METHOD(PolarisClient, GetOneInstance);
+PHP_METHOD(PolarisClient, GetInstances);
+PHP_METHOD(PolarisClient, GetAllInstances);
 PHP_METHOD(PolarisClient, UpdateServiceCallResult);
-PHP_METHOD(PolarisClient, GetRouteRuleKeys)       ;
+PHP_METHOD(PolarisClient, GetRouteRuleKeys);
 
 // Limit
-PHP_METHOD(PolarisClient, FetchRule)         ;
+// 必须要先执行 InitLimit 才可以执行
+PHP_METHOD(PolarisClient, FetchRule);
 PHP_METHOD(PolarisClient, FetchRuleLabelKeys);
-PHP_METHOD(PolarisClient, GetQuota)          ;
-PHP_METHOD(PolarisClient, UpdateCallResult)  ;
-PHP_METHOD(PolarisClient, InitQuotaWindow)   ;
+PHP_METHOD(PolarisClient, GetQuota);
+PHP_METHOD(PolarisClient, UpdateCallResult);
+PHP_METHOD(PolarisClient, InitQuotaWindow);
 
 #endif /* PHP_POLARIS_H */
 

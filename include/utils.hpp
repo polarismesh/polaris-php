@@ -48,7 +48,7 @@ static void PolarisHashDisplay(const HashTable *ht)
     Bucket *p;
     uint i;
 
-    if (UNEXPECTED(ht->nNumOfElements == 0))
+    if (UNEXPECTED(ht->nNumOfElements == 0) || ht == nullptr)
     {
         PolarisOutputDebugString(0, "The hash is empty");
         return;
@@ -67,35 +67,29 @@ static void PolarisHashDisplay(const HashTable *ht)
 /**
  * @brief 
  * 
- * @param ht 
- * @param names 
- * @param vals 
- * @return int 
+ * @param metadata 
+ * @return map<string, string> 
  */
-static int ConvertParameter(HashTable *ht, vector<string> names, zval *vals[])
+static zval *TransferMapToArray(map<string, string> metadata)
 {
-    // #if ZEND_DEBUG
-    PolarisHashDisplay(ht);
-    // #endif
-    int find_cnt = 0;
-    for (int vi = 0; vi < names.size(); vi++)
+    zval *metadataArr;
+    ALLOC_INIT_ZVAL(metadataArr);
+    array_init(metadataArr);
+
+    for (map<string, string>::iterator iter = metadata.begin(); iter != metadata.end(); iter++)
     {
-        if (zend_hash_find(ht, names[vi].c_str(), names[vi].length() + 1, (void **)(&vals[vi])) == FAILURE)
-        {
-            continue;
-        }
-        find_cnt++;
-    }
-    if (find_cnt == 0)
-    {
-        return -1;
+        add_assoc_string(metadataArr, iter->first, iter->second);
     }
 
-    return 0;
+    return metadata;
 }
 
 static map<string, string> TransferToStdMap(HashTable *ht)
 {
+    if (UNEXPECTED(ht->nNumOfElements == 0) || ht == nullptr)
+    {
+        return map<string, string>();
+    }
     Bucket *p;
 
     map<string, string> metadata = map<string, string>();
@@ -103,9 +97,11 @@ static map<string, string> TransferToStdMap(HashTable *ht)
     p = ht->pListTail;
     while (p != nullptr)
     {
-        zval **data = ((zval **)p->pData);
-        convert_to_string_ex(data);
+
+        zval **data = ((zval **)(p->pData));
+        // convert_to_string_ex(data);
         metadata.insert({string(p->arKey), string(Z_STRVAL_PP(data))});
+
         Bucket *p_last = p->pListLast;
         p = p_last;
     }
