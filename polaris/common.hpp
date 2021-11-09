@@ -1,5 +1,5 @@
-#ifndef _COMMON_H_
-#define _COMMON_H_
+#ifndef _COMMON_POLARIS_PHP_H_
+#define _COMMON_POLARIS_PHP_H_
 
 extern "C"
 {
@@ -16,90 +16,85 @@ extern "C"
 #include <string>
 
 // Polaris 创建时的参数key名称
-#define ConfigPath "config_path"
-#define LogDir "log_dir"
+string ConfigPath = "config_path";
+string LogDir = "log_dir";
 
 // Polaris 一些元数据信息
-#define Namespace "namespace"
-#define Service "service"
-#define SourceService "source"
-
-#define Protocol "protocol"
-#define Version "version"
-#define Token "token"
-#define Ttl "ttl"
-#define Host "host"
-#define Port "port"
-#define Weight "weight"
-#define Priority "priority"
-#define Metadata "metadata"
-#define SourceMetadata "source_metadata"
-#define VpcID "vpc_id"
-#define HeartbeatFlag "heartbeat"
-#define Canary "canary"
-#define IgnoreHalfOpen "ignore_half_open"
-#define SourceService "source_service"
-#define SourceSetName "source_set_name"
-#define HashKey "hash_key"
-#define HashString "hash_string"
-#define Labels "labels"
-#define ReplicateIndex "replicate_index"
-#define BackupInstanceNum "backup_instance_num"
-#define MetadataFailoverType "metadata_failover_type"
-#define FlowId "flow_id"
-#define Revision "revision"
-#define WeightType "weigth_type"
-#define ContainerName "container_name"
-#define InternalSetName "internal_set_name"
-#define LogicSet "logic_set"
-#define Region "region"
-#define Zone "zone"
-#define Campus "campus"
-#define LocalityAwareInfo "locality_aware_info"
-#define DynamicWeight "dynamic_weight"
-#define Healthy "healthy"
-#define Isolate "isolate"
-#define Delay "delay"
-#define CallRetStatus "ret_status"
-#define CallRetCode "ret_code"
-#define Amount "amount"
-
-#define Instances "instances"
-
-#define GetResponse "response"
-
-#define ServiceSubSet "subset"
-
-#define RuleKeys "rule_keys"
-#define LimitLabelKeys "limit_label_keys"
-#define CallResponseType "response_type"
-#define CallResponseTime "response_time"
-#define CallResponseCode "response_code"
-
-#define LoadBalanceType "load_balance_type"
-#define kLoadBalanceTypeWeightedRandom "weightedRandom"
-#define kLoadBalanceTypeRingHash "ringHash"
-#define kLoadBalanceTypeMaglevHash "maglev"
-#define kLoadBalanceTypeL5CstHash "l5cst"
-#define kLoadBalanceTypeSimpleHash "simpleHash"
-#define kLoadBalanceTypeCMurmurHash "cMurmurHash"
-#define kLoadBalanceTypeLocalityAware "localityAware"
-#define kLoadBalanceTypeDefaultConfig "default"
-
+string Namespace = "namespace";
+string Service = "service";
+string Protocol = "protocol";
+string Version = "version";
+string Token = "token";
+string Ttl = "ttl";
+string Host = "host";
+string Port = "port";
+string Weight = "weight";
+string Priority = "priority";
+string Metadata = "metadata";
+string SourceMetadata = "source_metadata";
+string VpcID = "vpc_id";
+string HeartbeatFlag = "heartbeat";
+string Canary = "canary";
+string IgnoreHalfOpen = "ignore_half_open";
+string IncludeUnhealthyInstances = "include_unhealthy_instances";
+string IncludeCircuitBreakInstances = "include_circuit_breaker_instances";
+string SkipRouteFilter = "skip_route_filter";
+string SourceService = "source_service";
+string SourceSetName = "source_set_name";
+string HashKey = "hash_key";
+string HashString = "hash_string";
+string Labels = "labels";
+string ReplicateIndex = "replicate_index";
+string BackupInstanceNum = "backup_instance_num";
+string MetadataFailoverTypeStr = "metadata_failover_type";
+string FlowId = "flow_id";
+string Revision = "revision";
+string WeightTypeStr = "weigth_type";
+string ContainerName = "container_name";
+string InternalSetName = "internal_set_name";
+string LogicSet = "logic_set";
+string Region = "region";
+string Zone = "zone";
+string Campus = "campus";
+string LocalityAwareInfo = "locality_aware_info";
+string DynamicWeight = "dynamic_weight";
+string Healthy = "healthy";
+string Isolate = "isolate";
+string Delay = "delay";
+string CallRetStatus = "ret_status";
+string CallRetCode = "ret_code";
+string Amount = "amount";
+string Instances = "instances";
+string GetResponse = "response";
+string ServiceSubSet = "subset";
+string RuleKeys = "rule_keys";
+string LimitLabelKeys = "limit_label_keys";
+string CallResponseType = "response_type";
+string CallResponseTime = "response_time";
+string CallResponseCode = "response_code";
+string LoadBalanceTypeStr = "load_balance_type";
+string kLoadBalanceTypeWeightedRandomStr = "weightedRandom";
+string kLoadBalanceTypeRingHashStr = "ringHash";
+string kLoadBalanceTypeMaglevHashStr = "maglev";
+string kLoadBalanceTypeL5CstHashStr = "l5cst";
+string kLoadBalanceTypeSimpleHashStr = "simpleHash";
+string kLoadBalanceTypeCMurmurHashStr = "cMurmurHash";
+string kLoadBalanceTypeLocalityAwareStr = "localityAware";
+string kLoadBalanceTypeDefaultConfigStr = "default";
 // Polaris 返回信息的一些key
-#define Code "code"
-#define ErrMsg "err_msg"
-#define InstanceID "instance_id"
+string Code = "code";
+string ErrMsg = "err_msg";
+string InstanceID = "instance_id";
 
 // 与限流相关的 key
-#define LimitRuleJsonStr "limit_rule_json_str"
-#define ResultForQuota "quota_result"
-#define ResultCodeForQuota "quota_result_code"
-#define ResultInfoForQuota "quota_result_info"
-#define LeftQuota "quota_left"
-#define AllQuota "quota_all"
-#define DurationForQuota "quota_duration"
-#define IsDegrade "degrade"
-#define WaitTimeForQuota "wait_time"
+string LimitRuleJsonStr = "limit_rule_json_str";
+string ResultForQuota = "quota_result";
+string ResultCodeForQuota = "quota_result_code";
+string ResultInfoForQuota = "quota_result_info";
+string LeftQuota = "quota_left";
+string AllQuota = "quota_all";
+string DurationForQuota = "quota_duration";
+string IsDegrade = "degrade";
+string WaitTimeForQuota = "wait_time";
 
 #endif
