@@ -27,7 +27,7 @@ jobs:
           POLARIS_CPP_VERSION: ${{ github.event.inputs.polaris_cpp_version }}
         run: |
           set -e
-          git clone git@github.com:polarismesh/polaris-cpp.git
+          git clone https://github.com/polarismesh/polaris-cpp.git
           cd polaris-cpp
           git checkout ${POLARIS_CPP_VERSION}
 
