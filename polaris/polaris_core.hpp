@@ -208,12 +208,12 @@ PHP_METHOD(PolarisClient, Register)
     if (provider != nullptr)
     {
         polaris::ReturnCode code = RegisterInstance(provider, registerVal, timeout, flowId, return_value);
-        return
+        return;
     }
     string errMsg = "polaris provider instance is nullptr";
-    add_assoc_long(return_value, Code, -1);
-    add_assoc_stringl(return_value, ErrMsg, (char *)errMsg.c_str(), errMsg.length(), 1);
-    return
+    add_assoc_long(return_value, Code.c_str(), -1);
+    add_assoc_stringl(return_value, ErrMsg.c_str(), (char *)errMsg.c_str(), errMsg.length(), 1);
+    return;
 }
 
 /**
@@ -252,8 +252,8 @@ PHP_METHOD(PolarisClient, Deregister)
         return;
     }
     string errMsg = "polaris provider instance is nullptr";
-    add_assoc_long(return_value, Code, -1);
-    add_assoc_stringl(return_value, ErrMsg, (char *)errMsg.c_str(), errMsg.length(), 1);
+    add_assoc_long(return_value, Code.c_str(), -1);
+    add_assoc_stringl(return_value, ErrMsg.c_str(), (char *)errMsg.c_str(), errMsg.length(), 1);
     return;
 }
 
@@ -291,8 +291,8 @@ PHP_METHOD(PolarisClient, Heartbeat)
         return;
     }
     string errMsg = "polaris provider instance is nullptr";
-    add_assoc_long(return_value, Code, -1);
-    add_assoc_stringl(return_value, ErrMsg, (char *)errMsg.c_str(), errMsg.length(), 1);
+    add_assoc_long(return_value, Code.c_str(), -1);
+    add_assoc_stringl(return_value, ErrMsg.c_str(), (char *)errMsg.c_str(), errMsg.length(), 1);
     return;
 }
 
@@ -356,8 +356,8 @@ PHP_METHOD(PolarisClient, FetchRule)
         return;
     }
     string errMsg = "polaris limit instance is nullptr";
-    add_assoc_long(return_value, Code, -1);
-    add_assoc_stringl(return_value, ErrMsg, (char *)errMsg.c_str(), errMsg.length(), 1);
+    add_assoc_long(return_value, Code.c_str(), -1);
+    add_assoc_stringl(return_value, ErrMsg.c_str(), (char *)errMsg.c_str(), errMsg.length(), 1);
     return;
 }
 
@@ -391,8 +391,8 @@ PHP_METHOD(PolarisClient, FetchRuleLabelKeys)
         return;
     }
     string errMsg = "polaris limit instance is nullptr";
-    add_assoc_long(return_value, Code, -1);
-    add_assoc_stringl(return_value, ErrMsg, (char *)errMsg.c_str(), errMsg.length(), 1);
+    add_assoc_long(return_value, Code.c_str(), -1);
+    add_assoc_stringl(return_value, ErrMsg.c_str(), (char *)errMsg.c_str(), errMsg.length(), 1);
     return;
 }
 
@@ -424,8 +424,8 @@ PHP_METHOD(PolarisClient, GetQuota)
         return;
     }
     string errMsg = "polaris limit instance is nullptr";
-    add_assoc_long(return_value, Code, -1);
-    add_assoc_stringl(return_value, ErrMsg, (char *)errMsg.c_str(), errMsg.length(), 1);
+    add_assoc_long(return_value, Code.c_str(), -1);
+    add_assoc_stringl(return_value, ErrMsg.c_str(), (char *)errMsg.c_str(), errMsg.length(), 1);
     return;
 }
 
@@ -457,8 +457,8 @@ PHP_METHOD(PolarisClient, UpdateCallResult)
         return;
     }
     string errMsg = "polaris limit instance is nullptr";
-    add_assoc_long(return_value, Code, -1);
-    add_assoc_stringl(return_value, ErrMsg, (char *)errMsg.c_str(), errMsg.length(), 1);
+    add_assoc_long(return_value, Code.c_str(), -1);
+    add_assoc_stringl(return_value, ErrMsg.c_str(), (char *)errMsg.c_str(), errMsg.length(), 1);
     return;
 }
 
@@ -494,8 +494,8 @@ PHP_METHOD(PolarisClient, InitQuotaWindow)
         return;
     }
     string errMsg = "polaris limit instance is nullptr";
-    add_assoc_long(return_value, Code, -1);
-    add_assoc_stringl(return_value, ErrMsg, (char *)errMsg.c_str(), errMsg.length(), 1);
+    add_assoc_long(return_value, Code.c_str(), -1);
+    add_assoc_stringl(return_value, ErrMsg.c_str(), (char *)errMsg.c_str(), errMsg.length(), 1);
     return;
 }
 
@@ -561,8 +561,8 @@ PHP_METHOD(PolarisClient, InitService)
         return;
     }
     string errMsg = "polaris consumer instance is nullptr";
-    add_assoc_long(return_value, Code, -1);
-    add_assoc_stringl(return_value, ErrMsg, (char *)errMsg.c_str(), errMsg.length(), 1);
+    add_assoc_long(return_value, Code.c_str(), -1);
+    add_assoc_stringl(return_value, ErrMsg.c_str(), (char *)errMsg.c_str(), errMsg.length(), 1);
     return;
 }
 
@@ -599,8 +599,8 @@ PHP_METHOD(PolarisClient, GetOneInstance)
         return;
     }
     string errMsg = "polaris consumer instance is nullptr";
-    add_assoc_long(return_value, Code, -1);
-    add_assoc_stringl(return_value, ErrMsg, (char *)errMsg.c_str(), errMsg.length(), 1);
+    add_assoc_long(return_value, Code.c_str(), -1);
+    add_assoc_stringl(return_value, ErrMsg.c_str(), (char *)errMsg.c_str(), errMsg.length(), 1);
     return;
 }
 
@@ -637,8 +637,8 @@ PHP_METHOD(PolarisClient, GetInstances)
         return;
     }
     string errMsg = "polaris consumer instance is nullptr";
-    add_assoc_long(return_value, Code, -1);
-    add_assoc_stringl(return_value, ErrMsg, (char *)errMsg.c_str(), errMsg.length(), 1);
+    add_assoc_long(return_value, Code.c_str(), -1);
+    add_assoc_stringl(return_value, ErrMsg.c_str(), (char *)errMsg.c_str(), errMsg.length(), 1);
     return;
 }
 
@@ -675,8 +675,8 @@ PHP_METHOD(PolarisClient, GetAllInstances)
         return;
     }
     string errMsg = "polaris consumer instance is nullptr";
-    add_assoc_long(return_value, Code, -1);
-    add_assoc_stringl(return_value, ErrMsg, (char *)errMsg.c_str(), errMsg.length(), 1);
+    add_assoc_long(return_value, Code.c_str(), -1);
+    add_assoc_stringl(return_value, ErrMsg.c_str(), (char *)errMsg.c_str(), errMsg.length(), 1);
     return;
 }
 
@@ -709,12 +709,12 @@ PHP_METHOD(PolarisClient, UpdateServiceCallResult)
     polaris::ConsumerApi *consumer = obj->consumer;
     if (consumer != nullptr)
     {
-        polaris::ReturnCode code = DoUpdateServiceCallResult(consumer, callVal, return_value);
+        polaris::ReturnCode code = DoUpdateServiceCallResult(consumer, callVal, timeout, flowId, return_value);
         return;
     }
     string errMsg = "polaris consumer instance is nullptr";
-    add_assoc_long(return_value, Code, -1);
-    add_assoc_stringl(return_value, ErrMsg, (char *)errMsg.c_str(), errMsg.length(), 1);
+    add_assoc_long(return_value, Code.c_str(), -1);
+    add_assoc_stringl(return_value, ErrMsg.c_str(), (char *)errMsg.c_str(), errMsg.length(), 1);
     return;
 }
 
@@ -751,8 +751,8 @@ PHP_METHOD(PolarisClient, GetRouteRuleKeys)
         return;
     }
     string errMsg = "polaris consumer instance is nullptr";
-    add_assoc_long(return_value, Code, -1);
-    add_assoc_stringl(return_value, ErrMsg, (char *)errMsg.c_str(), errMsg.length(), 1);
+    add_assoc_long(return_value, Code.c_str(), -1);
+    add_assoc_stringl(return_value, ErrMsg.c_str(), (char *)errMsg.c_str(), errMsg.length(), 1);
     return;
 }
 

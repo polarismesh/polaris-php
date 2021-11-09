@@ -23,17 +23,26 @@ extern "C"
 #include "common.hpp"
 #include "utils.hpp"
 
-// 负载均衡映射关系
-static map<string, polaris::LoadBalanceType> _loadBalanceTypeMap = {
-    {kLoadBalanceTypeWeightedRandom, polaris::kLoadBalanceTypeWeightedRandom},
-    {kLoadBalanceTypeRingHash, polaris::kLoadBalanceTypeRingHash},
-    {kLoadBalanceTypeMaglevHash, polaris::kLoadBalanceTypeMaglevHash},
-    {kLoadBalanceTypeL5CstHash, polaris::kLoadBalanceTypeL5CstHash},
-    {kLoadBalanceTypeSimpleHash, polaris::kLoadBalanceTypeSimpleHash},
-    {kLoadBalanceTypeCMurmurHash, polaris::kLoadBalanceTypeCMurmurHash},
-    {kLoadBalanceTypeLocalityAware, polaris::kLoadBalanceTypeLocalityAware},
-    {kLoadBalanceTypeDefaultConfig, polaris::kLoadBalanceTypeDefaultConfig},
-};
+static polaris::LoadBalanceType ConvertToLoadBalanceType(string val)
+{
+    if (kLoadBalanceTypeWeightedRandomStr.compare(val))
+        return polaris::kLoadBalanceTypeWeightedRandom;
+    if (kLoadBalanceTypeRingHashStr.compare(val))
+        return polaris::kLoadBalanceTypeRingHash;
+    if (kLoadBalanceTypeMaglevHashStr.compare(val))
+        return polaris::kLoadBalanceTypeMaglevHash;
+    if (kLoadBalanceTypeL5CstHashStr.compare(val))
+        return polaris::kLoadBalanceTypeL5CstHash;
+    if (kLoadBalanceTypeSimpleHashStr.compare(val))
+        return polaris::kLoadBalanceTypeSimpleHash;
+    if (kLoadBalanceTypeCMurmurHashStr.compare(val))
+        return polaris::kLoadBalanceTypeCMurmurHash;
+    if (kLoadBalanceTypeLocalityAwareStr.compare(val))
+        return polaris::kLoadBalanceTypeLocalityAware;
+    if (kLoadBalanceTypeDefaultConfigStr.compare(val))
+        return polaris::kLoadBalanceTypeDefaultConfig;
+    return polaris::kLoadBalanceTypeWeightedRandom;
+}
 
 static polaris::CallRetStatus convertToCallRetStatus(string val)
 {
@@ -60,55 +69,66 @@ static zval *convertInstanceToArray(polaris::Instance inst)
     ALLOC_INIT_ZVAL(arr);
     array_init(arr);
 
-    add_assoc_string(arr, Host, inst.GetHost());
-    add_assoc_string(arr, ContainerName, inst.GetContainerName());
-    add_assoc_string(arr, InternalSetName, inst.GetInternalSetName());
-    add_assoc_string(arr, LogicSet, inst.GetLogicSet());
-    add_assoc_string(arr, Region, inst.GetRegion());
-    add_assoc_string(arr, Zone, inst.GetZone());
-    add_assoc_string(arr, Campus, inst.GetCampus());
-    add_assoc_string(arr, VpcID, inst.GetVpcId());
-    add_assoc_string(arr, Protocol, inst.GetProtocol());
-    add_assoc_string(arr, Version, inst.GetVersion());
+    char *hostN = const_cast<char *>(inst.GetHost().c_str());
+    char *containerNameN = const_cast<char *>(inst.GetContainerName().c_str());
+    char *internalSetNameN = const_cast<char *>(inst.GetInternalSetName().c_str());
+    char *logicSetN = const_cast<char *>(inst.GetLogicSet().c_str());
+    char *regionN = const_cast<char *>(inst.GetRegion().c_str());
+    char *zoneN = const_cast<char *>(inst.GetZone().c_str());
+    char *campusN = const_cast<char *>(inst.GetCampus().c_str());
+    char *vpcIdN = const_cast<char *>(inst.GetVpcId().c_str());
+    char *protocolN = const_cast<char *>(inst.GetProtocol().c_str());
+    char *versionN = const_cast<char *>(inst.GetVersion().c_str());
 
-    add_assoc_long(arr, Port, inst.GetPort());
-    add_assoc_long(arr, Weight, inst.GetWeight());
-    add_assoc_long(arr, Priority, inst.GetPriority());
-    add_assoc_long(arr, DynamicWeight, inst.GetDynamicWeight());
-    add_assoc_long(arr, HashKey, inst.GetHash());
-    add_assoc_long(arr, LocalityAwareInfo, inst.GetLocalityAwareInfo());
+    add_assoc_string(arr, Host.c_str(), hostN, 1);
+    add_assoc_string(arr, ContainerName.c_str(), containerNameN, 1);
+    add_assoc_string(arr, InternalSetName.c_str(), internalSetNameN, 1);
+    add_assoc_string(arr, LogicSet.c_str(), logicSetN, 1);
+    add_assoc_string(arr, Region.c_str(), regionN, 1);
+    add_assoc_string(arr, Zone.c_str(), zoneN, 1);
+    add_assoc_string(arr, Campus.c_str(), campusN, 1);
+    add_assoc_string(arr, VpcID.c_str(), vpcIdN, 1);
+    add_assoc_string(arr, Protocol.c_str(), protocolN, 1);
+    add_assoc_string(arr, Version.c_str(), versionN, 1);
 
-    add_assoc_bool(arr, Healthy, inst.isHealthy());
-    add_assoc_bool(arr, Isolate, inst.isIsolate());
+    add_assoc_long(arr, Port.c_str(), inst.GetPort());
+    add_assoc_long(arr, Weight.c_str(), inst.GetWeight());
+    add_assoc_long(arr, Priority.c_str(), inst.GetPriority());
+    add_assoc_long(arr, DynamicWeight.c_str(), inst.GetDynamicWeight());
+    add_assoc_long(arr, HashKey.c_str(), inst.GetHash());
+    add_assoc_long(arr, LocalityAwareInfo.c_str(), inst.GetLocalityAwareInfo());
 
-    add_assoc_zval(arr, Metadata, TransferMapToArray(inst.GetMetadata()));
+    add_assoc_bool(arr, Healthy.c_str(), inst.isHealthy());
+    add_assoc_bool(arr, Isolate.c_str(), inst.isIsolate());
+
+    add_assoc_zval(arr, Metadata.c_str(), TransferMapToArray(inst.GetMetadata()));
 
     return arr;
 }
 
-static string convertWeigthTypeForString(polaris::WeightType wt)
+static string ConvertWeigthTypeForString(polaris::WeightType wt)
 {
     if (wt == polaris::kStaticWeightType)
     {
         return "static";
     }
-    return "dynamic"
+    return "dynamic";
 }
 
-static polaris::MetadataFailoverType convertToMetadataFailoverType(string val)
+static polaris::MetadataFailoverType ConvertToMetadataFailoverType(string val)
 {
-    if ("notKey".compare(val))
+    if (string("notKey").compare(val))
     {
         return polaris::kMetadataFailoverNotKey;
     }
-    if ("all".compare(val))
+    if (string("all").compare(val))
     {
         return polaris::kMetadataFailoverAll;
     }
     return polaris::kMetadataFailoverNone;
 }
 
-static polaris::GetOneInstanceRequest &convertoToGetOneInstanceRequest(zval *val, uint64_t timeout, uint64_t flowId)
+static polaris::GetOneInstanceRequest *convertoToGetOneInstanceRequest(zval *reqVal, uint64_t timeout, uint64_t flowId)
 {
     // 整体的参数描述信息
     map<string, string> params = TransferToStdMap(Z_ARRVAL_P(reqVal));
@@ -119,38 +139,39 @@ static polaris::GetOneInstanceRequest &convertoToGetOneInstanceRequest(zval *val
     map<string, string> sourceMetadata = map<string, string>();
     map<string, string> sourceService = map<string, string>();
 
-    polaris::GetOneInstanceRequest req({params[Namespace], params[Service]});
+    polaris::ServiceKey service_key = {params[Namespace], params[Service]};
+    polaris::GetOneInstanceRequest req(service_key);
     req.SetFlowId(flowId);
     req.SetTimeout(timeout);
     req.SetCanary(params[Canary]);
     req.SetSourceSetName(SourceSetName);
     req.SetIgnoreHalfOpen(string("true").compare(params[IgnoreHalfOpen]));
     req.SetHashString(params[HashString]);
-    req.SetHashKey(params[HashKey]);
-    req.SetReplicateIndex(atoi(params[ReplicateIndex]));
-    req.SetBackupInstanceNum(atoi(params[BackupInstanceNum]));
-    req.SetLoadBalanceType(_loadBalanceTypeMap[params[LoadBalanceType]]);
-    req.SetMetadataFailover(convertToMetadataFailoverType(params[MetadataFailoverType]));
+    req.SetHashKey(atol(params[HashKey].c_str()));
+    req.SetReplicateIndex(atoi(params[ReplicateIndex].c_str()));
+    req.SetBackupInstanceNum(atoi(params[BackupInstanceNum].c_str()));
+    req.SetLoadBalanceType(ConvertToLoadBalanceType(params[LoadBalanceTypeStr]));
+    req.SetMetadataFailover(ConvertToMetadataFailoverType(params[MetadataFailoverTypeStr]));
 
     // 获取被调用服务的元数据信息
-    if (zend_hash_find(HASH_OF(reqVal), Metadata, sizeof(Metadata), (void **)(&metadataVal)) == SUCCESS)
+    if (zend_hash_find(HASH_OF(reqVal), Metadata.c_str(), sizeof(Metadata), (void **)(&metadataVal)) == SUCCESS)
     {
         matadata = TransferToStdMap(Z_ARRVAL_PP(metadataVal));
     }
     req.SetMetadata(matadata);
     // 获取被调用服务的元数据信息
-    if (zend_hash_find(HASH_OF(reqVal), Labels, sizeof(Labels), (void **)(&labelsVal)) == SUCCESS)
+    if (zend_hash_find(HASH_OF(reqVal), Labels.c_str(), sizeof(Labels), (void **)(&labelsVal)) == SUCCESS)
     {
         labels = TransferToStdMap(Z_ARRVAL_PP(metadataVal));
     }
     req.SetLabels(labels);
 
-    if (zend_hash_find(HASH_OF(reqVal), SourceService, sizeof(SourceService), (void **)(&sourceServiceVal)) == SUCCESS)
+    if (zend_hash_find(HASH_OF(reqVal), SourceService.c_str(), sizeof(SourceService), (void **)(&sourceServiceVal)) == SUCCESS)
     {
         // 获取被调服务的信息数据
         sourceService = TransferToStdMap(Z_ARRVAL_PP(sourceServiceVal));
         // 获取被调服务的 metadata 数据
-        if (zend_hash_find(HASH_OF(*sourceServiceVal), Metadata, sizeof(Metadata), (void **)(&srcmetaVal)) == SUCCESS)
+        if (zend_hash_find(HASH_OF(*sourceServiceVal), Metadata.c_str(), sizeof(Metadata), (void **)(&srcmetaVal)) == SUCCESS)
         {
             sourceMetadata = TransferToStdMap(Z_ARRVAL_PP(srcmetaVal));
         }
@@ -162,7 +183,56 @@ static polaris::GetOneInstanceRequest &convertoToGetOneInstanceRequest(zval *val
         req.SetSourceService(srcInfo);
     }
 
-    return req;
+    return &req;
+}
+
+static polaris::GetInstancesRequest *convertoToGetInstancesRequest(zval *reqVal, uint64_t timeout, uint64_t flowId)
+{
+    // 整体的参数描述信息
+    map<string, string> params = TransferToStdMap(Z_ARRVAL_P(reqVal));
+
+    zval **labelsVal, **metadataVal, **srcmetaVal, **sourceServiceVal;
+    map<string, string> labels = map<string, string>();
+    map<string, string> matadata = map<string, string>();
+    map<string, string> sourceMetadata = map<string, string>();
+    map<string, string> sourceService = map<string, string>();
+
+    polaris::ServiceKey service_key = {params[Namespace], params[Service]};
+    polaris::GetInstancesRequest req(service_key);
+    req.SetFlowId(flowId);
+    req.SetTimeout(timeout);
+    req.SetIncludeUnhealthyInstances(string("true").compare(params[IncludeUnhealthyInstances]));
+    req.SetIncludeCircuitBreakInstances(string("true").compare(params[IncludeCircuitBreakInstances]));
+    req.SetSkipRouteFilter(string("true").compare(params[SkipRouteFilter]));
+    req.SetCanary(params[Canary]);
+    req.SetSourceSetName(params[SourceSetName]);
+    req.SetMetadataFailover(ConvertToMetadataFailoverType(params[MetadataFailoverTypeStr]));
+
+    // 获取被调用服务的元数据信息
+    if (zend_hash_find(HASH_OF(reqVal), Metadata.c_str(), sizeof(Metadata), (void **)(&metadataVal)) == SUCCESS)
+    {
+        matadata = TransferToStdMap(Z_ARRVAL_PP(metadataVal));
+    }
+    req.SetMetadata(matadata);
+
+    if (zend_hash_find(HASH_OF(reqVal), SourceService.c_str(), sizeof(SourceService), (void **)(&sourceServiceVal)) == SUCCESS)
+    {
+        // 获取被调服务的信息数据
+        sourceService = TransferToStdMap(Z_ARRVAL_PP(sourceServiceVal));
+        // 获取被调服务的 metadata 数据
+        if (zend_hash_find(HASH_OF(*sourceServiceVal), Metadata.c_str(), sizeof(Metadata), (void **)(&srcmetaVal)) == SUCCESS)
+        {
+            sourceMetadata = TransferToStdMap(Z_ARRVAL_PP(srcmetaVal));
+        }
+
+        polaris::ServiceInfo srcInfo;
+        srcInfo.metadata_ = sourceMetadata;
+        srcInfo.service_key_.name_ = sourceService[Service];
+        srcInfo.service_key_.namespace_ = sourceService[Namespace];
+        req.SetSourceService(srcInfo);
+    }
+
+    return &req;
 }
 
 static zval *convertServiceResponseToZval(polaris::InstancesResponse *resp)
@@ -172,13 +242,19 @@ static zval *convertServiceResponseToZval(polaris::InstancesResponse *resp)
     array_init(arr);
 
     // 设置服务的基本信息数据
-    add_assoc_long(arr, FlowId, resp->GetFlowId());
-    add_assoc_string(arr, Service, resp->GetServiceName());
-    add_assoc_string(arr, Namespace, resp->GetServiceNamespace());
-    add_assoc_string(arr, Revision, resp->GetRevision());
-    add_assoc_zval(arr, Metadata, TransferMapToArray(resp->GetMetadata()));
-    add_assoc_string(arr, WeightType, convertWeigthTypeForString(resp->GetWeightType()));
-    add_assoc_zval(arr, ServiceSubSet, TransferMapToArray(resp->GetSubset()));
+    add_assoc_long(arr, FlowId.c_str(), resp->GetFlowId());
+
+    char *svrN = const_cast<char *>(resp->GetServiceName().c_str());
+    char *nsN = const_cast<char *>(resp->GetServiceNamespace().c_str());
+    char *revN = const_cast<char *>(resp->GetRevision().c_str());
+    char *weightTypeN = const_cast<char *>(ConvertWeigthTypeForString(resp->GetWeightType()).c_str());
+
+    add_assoc_string(arr, Service.c_str(), svrN, 1);
+    add_assoc_string(arr, Namespace.c_str(), nsN, 1);
+    add_assoc_string(arr, Revision.c_str(), revN, 1);
+    add_assoc_zval(arr, Metadata.c_str(), TransferMapToArray(resp->GetMetadata()));
+    add_assoc_string(arr, WeightTypeStr.c_str(), weightTypeN, 1);
+    add_assoc_zval(arr, ServiceSubSet.c_str(), TransferMapToArray(resp->GetSubset()));
 
     // 设置服务实例的基本信息数据
     zval *instancesVal;
@@ -195,7 +271,7 @@ static zval *convertServiceResponseToZval(polaris::InstancesResponse *resp)
         add_next_index_zval(instancesVal, val);
     }
 
-    add_assoc_zval(arr, Instances, instancesVal);
+    add_assoc_zval(arr, Instances.c_str(), instancesVal);
 
     return arr;
 }
@@ -211,14 +287,64 @@ static zval *convertServiceResponseToZval(polaris::InstancesResponse *resp)
  */
 static polaris::ReturnCode DoInitService(polaris::ConsumerApi *consumer, zval *reqVal, uint64_t timeout, uint64_t flowId, zval *returnVal)
 {
-    polaris::GetOneInstanceRequest req = convertoToGetOneInstanceRequest(reqVal);
+    // polaris::GetOneInstanceRequest req = *convertoToGetOneInstanceRequest(reqVal, timeout, flowId);
+    // 整体的参数描述信息
+    map<string, string> params = TransferToStdMap(Z_ARRVAL_P(reqVal));
+
+    zval **labelsVal, **metadataVal, **srcmetaVal, **sourceServiceVal;
+    map<string, string> labels = map<string, string>();
+    map<string, string> matadata = map<string, string>();
+    map<string, string> sourceMetadata = map<string, string>();
+    map<string, string> sourceService = map<string, string>();
+
+    polaris::ServiceKey service_key = {params[Namespace], params[Service]};
+    polaris::GetOneInstanceRequest req(service_key);
     req.SetFlowId(flowId);
     req.SetTimeout(timeout);
+    req.SetCanary(params[Canary]);
+    req.SetSourceSetName(SourceSetName);
+    req.SetIgnoreHalfOpen(string("true").compare(params[IgnoreHalfOpen]));
+    req.SetHashString(params[HashString]);
+    req.SetHashKey(atol(params[HashKey].c_str()));
+    req.SetReplicateIndex(atoi(params[ReplicateIndex].c_str()));
+    req.SetBackupInstanceNum(atoi(params[BackupInstanceNum].c_str()));
+    req.SetLoadBalanceType(ConvertToLoadBalanceType(params[LoadBalanceTypeStr]));
+    req.SetMetadataFailover(ConvertToMetadataFailoverType(params[MetadataFailoverTypeStr]));
+
+    // 获取被调用服务的元数据信息
+    if (zend_hash_find(HASH_OF(reqVal), Metadata.c_str(), sizeof(Metadata), (void **)(&metadataVal)) == SUCCESS)
+    {
+        matadata = TransferToStdMap(Z_ARRVAL_PP(metadataVal));
+    }
+    req.SetMetadata(matadata);
+    // 获取被调用服务的元数据信息
+    if (zend_hash_find(HASH_OF(reqVal), Labels.c_str(), sizeof(Labels), (void **)(&labelsVal)) == SUCCESS)
+    {
+        labels = TransferToStdMap(Z_ARRVAL_PP(metadataVal));
+    }
+    req.SetLabels(labels);
+
+    if (zend_hash_find(HASH_OF(reqVal), SourceService.c_str(), sizeof(SourceService), (void **)(&sourceServiceVal)) == SUCCESS)
+    {
+        // 获取被调服务的信息数据
+        sourceService = TransferToStdMap(Z_ARRVAL_PP(sourceServiceVal));
+        // 获取被调服务的 metadata 数据
+        if (zend_hash_find(HASH_OF(*sourceServiceVal), Metadata.c_str(), sizeof(Metadata), (void **)(&srcmetaVal)) == SUCCESS)
+        {
+            sourceMetadata = TransferToStdMap(Z_ARRVAL_PP(srcmetaVal));
+        }
+
+        polaris::ServiceInfo srcInfo;
+        srcInfo.metadata_ = sourceMetadata;
+        srcInfo.service_key_.name_ = sourceService[Service];
+        srcInfo.service_key_.namespace_ = sourceService[Namespace];
+        req.SetSourceService(srcInfo);
+    }
 
     polaris::ReturnCode code = consumer->InitService(req);
     string errMsg = polaris::ReturnCodeToMsg(code);
-    add_assoc_long(returnVal, Code, code);
-    add_assoc_stringl(returnVal, ErrMsg, (char *)errMsg.c_str(), errMsg.length(), 1);
+    add_assoc_long(returnVal, Code.c_str(), code);
+    add_assoc_stringl(returnVal, ErrMsg.c_str(), (char *)errMsg.c_str(), errMsg.length(), 1);
     return code;
 }
 
@@ -233,9 +359,58 @@ static polaris::ReturnCode DoInitService(polaris::ConsumerApi *consumer, zval *r
  */
 static polaris::ReturnCode DoGetOneInstance(polaris::ConsumerApi *consumer, zval *reqVal, uint64_t timeout, uint64_t flowId, zval *returnVal)
 {
-    polaris::GetOneInstanceRequest req = convertoToGetOneInstanceRequest(reqVal);
+    // polaris::GetOneInstanceRequest req = *convertoToGetOneInstanceRequest(reqVal, timeout, flowId);
+    map<string, string> params = TransferToStdMap(Z_ARRVAL_P(reqVal));
+
+    zval **labelsVal, **metadataVal, **srcmetaVal, **sourceServiceVal;
+    map<string, string> labels = map<string, string>();
+    map<string, string> matadata = map<string, string>();
+    map<string, string> sourceMetadata = map<string, string>();
+    map<string, string> sourceService = map<string, string>();
+
+    polaris::ServiceKey service_key = {params[Namespace], params[Service]};
+    polaris::GetOneInstanceRequest req(service_key);
     req.SetFlowId(flowId);
     req.SetTimeout(timeout);
+    req.SetCanary(params[Canary]);
+    req.SetSourceSetName(SourceSetName);
+    req.SetIgnoreHalfOpen(string("true").compare(params[IgnoreHalfOpen]));
+    req.SetHashString(params[HashString]);
+    req.SetHashKey(atol(params[HashKey].c_str()));
+    req.SetReplicateIndex(atoi(params[ReplicateIndex].c_str()));
+    req.SetBackupInstanceNum(atoi(params[BackupInstanceNum].c_str()));
+    req.SetLoadBalanceType(ConvertToLoadBalanceType(params[LoadBalanceTypeStr]));
+    req.SetMetadataFailover(ConvertToMetadataFailoverType(params[MetadataFailoverTypeStr]));
+
+    // 获取被调用服务的元数据信息
+    if (zend_hash_find(HASH_OF(reqVal), Metadata.c_str(), sizeof(Metadata), (void **)(&metadataVal)) == SUCCESS)
+    {
+        matadata = TransferToStdMap(Z_ARRVAL_PP(metadataVal));
+    }
+    req.SetMetadata(matadata);
+    // 获取被调用服务的元数据信息
+    if (zend_hash_find(HASH_OF(reqVal), Labels.c_str(), sizeof(Labels), (void **)(&labelsVal)) == SUCCESS)
+    {
+        labels = TransferToStdMap(Z_ARRVAL_PP(metadataVal));
+    }
+    req.SetLabels(labels);
+
+    if (zend_hash_find(HASH_OF(reqVal), SourceService.c_str(), sizeof(SourceService), (void **)(&sourceServiceVal)) == SUCCESS)
+    {
+        // 获取被调服务的信息数据
+        sourceService = TransferToStdMap(Z_ARRVAL_PP(sourceServiceVal));
+        // 获取被调服务的 metadata 数据
+        if (zend_hash_find(HASH_OF(*sourceServiceVal), Metadata.c_str(), sizeof(Metadata), (void **)(&srcmetaVal)) == SUCCESS)
+        {
+            sourceMetadata = TransferToStdMap(Z_ARRVAL_PP(srcmetaVal));
+        }
+
+        polaris::ServiceInfo srcInfo;
+        srcInfo.metadata_ = sourceMetadata;
+        srcInfo.service_key_.name_ = sourceService[Service];
+        srcInfo.service_key_.namespace_ = sourceService[Namespace];
+        req.SetSourceService(srcInfo);
+    }
 
     polaris::InstancesResponse *resp;
 
@@ -244,11 +419,11 @@ static polaris::ReturnCode DoGetOneInstance(polaris::ConsumerApi *consumer, zval
     if (code == polaris::kReturnOk)
     {
         zval *arr = convertServiceResponseToZval(resp);
-        add_assoc_zval(returnVal, GetResponse, arr);
+        add_assoc_zval(returnVal, GetResponse.c_str(), arr);
     }
     string errMsg = polaris::ReturnCodeToMsg(code);
-    add_assoc_long(returnVal, Code, code);
-    add_assoc_stringl(returnVal, ErrMsg, (char *)errMsg.c_str(), errMsg.length(), 1);
+    add_assoc_long(returnVal, Code.c_str(), code);
+    add_assoc_stringl(returnVal, ErrMsg.c_str(), (char *)errMsg.c_str(), errMsg.length(), 1);
     return code;
 }
 
@@ -264,9 +439,49 @@ static polaris::ReturnCode DoGetOneInstance(polaris::ConsumerApi *consumer, zval
  */
 static polaris::ReturnCode DoGetInstances(polaris::ConsumerApi *consumer, zval *reqVal, uint64_t timeout, uint64_t flowId, zval *returnVal)
 {
-    polaris::GetOneInstanceRequest req = convertoToGetOneInstanceRequest(reqVal);
+    // polaris::GetInstancesRequest req = *convertoToGetInstancesRequest(reqVal, timeout, flowId);
+    map<string, string> params = TransferToStdMap(Z_ARRVAL_P(reqVal));
+
+    zval **labelsVal, **metadataVal, **srcmetaVal, **sourceServiceVal;
+    map<string, string> labels = map<string, string>();
+    map<string, string> matadata = map<string, string>();
+    map<string, string> sourceMetadata = map<string, string>();
+    map<string, string> sourceService = map<string, string>();
+
+    polaris::ServiceKey service_key = {params[Namespace], params[Service]};
+    polaris::GetInstancesRequest req(service_key);
     req.SetFlowId(flowId);
     req.SetTimeout(timeout);
+    req.SetIncludeUnhealthyInstances(string("true").compare(params[IncludeUnhealthyInstances]));
+    req.SetIncludeCircuitBreakInstances(string("true").compare(params[IncludeCircuitBreakInstances]));
+    req.SetSkipRouteFilter(string("true").compare(params[SkipRouteFilter]));
+    req.SetCanary(params[Canary]);
+    req.SetSourceSetName(params[SourceSetName]);
+    req.SetMetadataFailover(ConvertToMetadataFailoverType(params[MetadataFailoverTypeStr]));
+
+    // 获取被调用服务的元数据信息
+    if (zend_hash_find(HASH_OF(reqVal), Metadata.c_str(), sizeof(Metadata), (void **)(&metadataVal)) == SUCCESS)
+    {
+        matadata = TransferToStdMap(Z_ARRVAL_PP(metadataVal));
+    }
+    req.SetMetadata(matadata);
+
+    if (zend_hash_find(HASH_OF(reqVal), SourceService.c_str(), sizeof(SourceService), (void **)(&sourceServiceVal)) == SUCCESS)
+    {
+        // 获取被调服务的信息数据
+        sourceService = TransferToStdMap(Z_ARRVAL_PP(sourceServiceVal));
+        // 获取被调服务的 metadata 数据
+        if (zend_hash_find(HASH_OF(*sourceServiceVal), Metadata.c_str(), sizeof(Metadata), (void **)(&srcmetaVal)) == SUCCESS)
+        {
+            sourceMetadata = TransferToStdMap(Z_ARRVAL_PP(srcmetaVal));
+        }
+
+        polaris::ServiceInfo srcInfo;
+        srcInfo.metadata_ = sourceMetadata;
+        srcInfo.service_key_.name_ = sourceService[Service];
+        srcInfo.service_key_.namespace_ = sourceService[Namespace];
+        req.SetSourceService(srcInfo);
+    }
 
     polaris::InstancesResponse *resp;
 
@@ -275,11 +490,11 @@ static polaris::ReturnCode DoGetInstances(polaris::ConsumerApi *consumer, zval *
     if (code == polaris::kReturnOk)
     {
         zval *arr = convertServiceResponseToZval(resp);
-        add_assoc_zval(returnVal, GetResponse, arr);
+        add_assoc_zval(returnVal, GetResponse.c_str(), arr);
     }
     string errMsg = polaris::ReturnCodeToMsg(code);
-    add_assoc_long(returnVal, Code, code);
-    add_assoc_stringl(returnVal, ErrMsg, (char *)errMsg.c_str(), errMsg.length(), 1);
+    add_assoc_long(returnVal, Code.c_str(), code);
+    add_assoc_stringl(returnVal, ErrMsg.c_str(), (char *)errMsg.c_str(), errMsg.length(), 1);
     return code;
 }
 
@@ -294,22 +509,62 @@ static polaris::ReturnCode DoGetInstances(polaris::ConsumerApi *consumer, zval *
  */
 static polaris::ReturnCode DoGetAllInstances(polaris::ConsumerApi *consumer, zval *reqVal, uint64_t timeout, uint64_t flowId, zval *returnVal)
 {
-    polaris::GetOneInstanceRequest req = convertoToGetOneInstanceRequest(reqVal);
+    // polaris::GetInstancesRequest req = *convertoToGetInstancesRequest(reqVal, timeout, flowId);
+    map<string, string> params = TransferToStdMap(Z_ARRVAL_P(reqVal));
+
+    zval **labelsVal, **metadataVal, **srcmetaVal, **sourceServiceVal;
+    map<string, string> labels = map<string, string>();
+    map<string, string> matadata = map<string, string>();
+    map<string, string> sourceMetadata = map<string, string>();
+    map<string, string> sourceService = map<string, string>();
+
+    polaris::ServiceKey service_key = {params[Namespace], params[Service]};
+    polaris::GetInstancesRequest req(service_key);
     req.SetFlowId(flowId);
     req.SetTimeout(timeout);
+    req.SetIncludeUnhealthyInstances(string("true").compare(params[IncludeUnhealthyInstances]));
+    req.SetIncludeCircuitBreakInstances(string("true").compare(params[IncludeCircuitBreakInstances]));
+    req.SetSkipRouteFilter(string("true").compare(params[SkipRouteFilter]));
+    req.SetCanary(params[Canary]);
+    req.SetSourceSetName(params[SourceSetName]);
+    req.SetMetadataFailover(ConvertToMetadataFailoverType(params[MetadataFailoverTypeStr]));
+
+    // 获取被调用服务的元数据信息
+    if (zend_hash_find(HASH_OF(reqVal), Metadata.c_str(), sizeof(Metadata), (void **)(&metadataVal)) == SUCCESS)
+    {
+        matadata = TransferToStdMap(Z_ARRVAL_PP(metadataVal));
+    }
+    req.SetMetadata(matadata);
+
+    if (zend_hash_find(HASH_OF(reqVal), SourceService.c_str(), sizeof(SourceService), (void **)(&sourceServiceVal)) == SUCCESS)
+    {
+        // 获取被调服务的信息数据
+        sourceService = TransferToStdMap(Z_ARRVAL_PP(sourceServiceVal));
+        // 获取被调服务的 metadata 数据
+        if (zend_hash_find(HASH_OF(*sourceServiceVal), Metadata.c_str(), sizeof(Metadata), (void **)(&srcmetaVal)) == SUCCESS)
+        {
+            sourceMetadata = TransferToStdMap(Z_ARRVAL_PP(srcmetaVal));
+        }
+
+        polaris::ServiceInfo srcInfo;
+        srcInfo.metadata_ = sourceMetadata;
+        srcInfo.service_key_.name_ = sourceService[Service];
+        srcInfo.service_key_.namespace_ = sourceService[Namespace];
+        req.SetSourceService(srcInfo);
+    }
 
     polaris::InstancesResponse *resp;
 
-    polaris::ReturnCode code = consumer->DoGetAllInstances(req, resp);
+    polaris::ReturnCode code = consumer->GetAllInstances(req, resp);
 
     if (code == polaris::kReturnOk)
     {
         zval *arr = convertServiceResponseToZval(resp);
-        add_assoc_zval(returnVal, GetResponse, arr);
+        add_assoc_zval(returnVal, GetResponse.c_str(), arr);
     }
     string errMsg = polaris::ReturnCodeToMsg(code);
-    add_assoc_long(returnVal, Code, code);
-    add_assoc_stringl(returnVal, ErrMsg, (char *)errMsg.c_str(), errMsg.length(), 1);
+    add_assoc_long(returnVal, Code.c_str(), code);
+    add_assoc_stringl(returnVal, ErrMsg.c_str(), (char *)errMsg.c_str(), errMsg.length(), 1);
     return code;
 }
 
@@ -321,7 +576,7 @@ static polaris::ReturnCode DoGetAllInstances(polaris::ConsumerApi *consumer, zva
  * @param val 
  * @return polaris::ReturnCode 
  */
-static polaris::ReturnCode DoUpdateServiceCallResult(polaris::ConsumerApi *consumer, zval *val, uint64_t timeout, uint64_t flowId, zval *returnVal)
+static polaris::ReturnCode DoUpdateServiceCallResult(polaris::ConsumerApi *consumer, zval *reqVal, uint64_t timeout, uint64_t flowId, zval *returnVal)
 {
     // 整体的参数描述信息
     map<string, string> params = TransferToStdMap(Z_ARRVAL_P(reqVal));
@@ -331,32 +586,30 @@ static polaris::ReturnCode DoUpdateServiceCallResult(polaris::ConsumerApi *consu
     map<string, string> subset = map<string, string>();
 
     polaris::ServiceCallResult result;
-    result.SetFlowId(flowId);
-    result.SetTimeout(timeout);
     result.SetServiceName(params[Service]);
     result.SetServiceNamespace(params[Namespace]);
     result.SetInstanceId(params[InstanceID]);
-    result.SetInstanceHostAndPort(params[Host], atoi(params[Port]));
-    result.SetDelay(atol(params[Delay]));
-    result.SetLocalityAwareInfo(atol(params[LocalityAwareInfo]));
+    result.SetInstanceHostAndPort(params[Host], atoi(params[Port].c_str()));
+    result.SetDelay(atol(params[Delay].c_str()));
+    result.SetLocalityAwareInfo(atol(params[LocalityAwareInfo].c_str()));
     result.SetRetStatus(convertToCallRetStatus(params[CallRetStatus]));
-    result.SetRetCode(atoi(params[CallRetCode]));
+    result.SetRetCode(atoi(params[CallRetCode].c_str()));
 
     // 获取被调用服务的元数据信息
-    if (zend_hash_find(HASH_OF(reqVal), ServiceSubSet, sizeof(ServiceSubSet), (void **)(&subsetVal)) == SUCCESS)
+    if (zend_hash_find(HASH_OF(reqVal), ServiceSubSet.c_str(), sizeof(ServiceSubSet), (void **)(&subsetVal)) == SUCCESS)
     {
         subset = TransferToStdMap(Z_ARRVAL_PP(subsetVal));
     }
     result.SetSubset(subset);
     // 获取被调用服务的元数据信息
-    if (zend_hash_find(HASH_OF(reqVal), Labels, sizeof(Labels), (void **)(&labelsVal)) == SUCCESS)
+    if (zend_hash_find(HASH_OF(reqVal), Labels.c_str(), sizeof(Labels), (void **)(&labelsVal)) == SUCCESS)
     {
         labels = TransferToStdMap(Z_ARRVAL_PP(labelsVal));
     }
     result.SetLabels(labels);
 
     // 获取主调服务的信息数据
-    if (zend_hash_find(HASH_OF(reqVal), SourceService, sizeof(SourceService), (void **)(&sourceVal)) == SUCCESS)
+    if (zend_hash_find(HASH_OF(reqVal), SourceService.c_str(), sizeof(SourceService), (void **)(&sourceVal)) == SUCCESS)
     {
         map<string, string> sourceSvr = TransferToStdMap(Z_ARRVAL_PP(sourceVal));
         polaris::ServiceKey key = {sourceSvr[Namespace], sourceSvr[Service]};
@@ -365,8 +618,8 @@ static polaris::ReturnCode DoUpdateServiceCallResult(polaris::ConsumerApi *consu
 
     polaris::ReturnCode code = consumer->UpdateServiceCallResult(result);
     string errMsg = polaris::ReturnCodeToMsg(code);
-    add_assoc_long(returnVal, Code, code);
-    add_assoc_stringl(returnVal, ErrMsg, (char *)errMsg.c_str(), errMsg.length(), 1);
+    add_assoc_long(returnVal, Code.c_str(), code);
+    add_assoc_stringl(returnVal, ErrMsg.c_str(), (char *)errMsg.c_str(), errMsg.length(), 1);
     return code;
 }
 
@@ -378,7 +631,7 @@ static polaris::ReturnCode DoUpdateServiceCallResult(polaris::ConsumerApi *consu
  * @param timeout 
  * @return polaris::ReturnCode 
  */
-static polaris::ReturnCode DoGetRouteRuleKeys(polaris::ConsumerApi *consumer, zval *val, uint64_t timeout, zval *returnVal)
+static polaris::ReturnCode DoGetRouteRuleKeys(polaris::ConsumerApi *consumer, zval *reqVal, uint64_t timeout, zval *returnVal)
 {
     map<string, string> params = TransferToStdMap(Z_ARRVAL_P(reqVal));
 
@@ -388,8 +641,8 @@ static polaris::ReturnCode DoGetRouteRuleKeys(polaris::ConsumerApi *consumer, zv
     polaris::ReturnCode code = consumer->GetRouteRuleKeys(key, timeout, ruleKeys);
 
     string errMsg = polaris::ReturnCodeToMsg(code);
-    add_assoc_long(returnVal, Code, code);
-    add_assoc_stringl(returnVal, ErrMsg, (char *)errMsg.c_str(), errMsg.length(), 1);
+    add_assoc_long(returnVal, Code.c_str(), code);
+    add_assoc_stringl(returnVal, ErrMsg.c_str(), (char *)errMsg.c_str(), errMsg.length(), 1);
 
     if (code == polaris::kReturnOk && ruleKeys != nullptr)
     {
@@ -401,7 +654,7 @@ static polaris::ReturnCode DoGetRouteRuleKeys(polaris::ConsumerApi *consumer, zv
             std::cout << *iter << " , " << endl;
             add_next_index_string(arr, ((string)(*iter)).c_str(), 1);
         }
-        add_assoc_zval(returnVal, RuleKeys, arr);
+        add_assoc_zval(returnVal, RuleKeys.c_str(), arr);
     }
 
     return code;
