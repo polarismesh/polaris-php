@@ -544,30 +544,23 @@ array(
 
 *请求参数*
 
-| 参数名称   |                          |             | 参数类型            | 参数用途                                                                |
-| :--------- | :----------------------- | :---------- | :------------------ | :---------------------------------------------------------------------- |
-| `timeout`  |                          |             | long                | 超时时间，单位毫秒                                                      |
-| `flowId`   |                          |             | long                | 本次请求的标识ID                                                        |
-| `instance` |                          |             | map<string, object> |                                                                         |
-| ├          | `namespace`              |             | string              | 被调服务所在的命名空间                                                  |
-| ├          | `service`                |             | string              | 被调服务名称                                                            |
-| ├          | `version`                |             | string              | 实例版本                                                                |
-| ├          | `vpc_id`                 |             | string              | 实例所在的VPC_ID信息                                                    |
-| ├          | `metadata`               |             | map<string, string> | 设置元数据，用于元数据路由                                              |
-| ├          | `canary`                 |             | string              | 设置调用哪个金丝雀服务实例                                              |
-| ├          | `source_set_name`        |             | string              | 设置调用哪个set下的服务                                                 |
-| ├          | `ignore_half_open`       |             | string              | 设置是否略过跳过半开探测节点, "true" or "false"                         |
-| ├          | `hash_string`            |             | string              | 设置 hash 字符串，用于一致性哈希负载均衡算法                            |
-| ├          | `hash_key`               |             | string              | 设置hash key，用于一致性哈希负载均衡算法，字符串数字: "100"             |
-| ├          | `replicate_index`        |             | string              | 用于一致性hash算法时获取副本实例，字符串数字: "100"                     |
-| ├          | `backup_instance_num`    |             | string              | 设置用于重试的实例数。可选，默认不返回用于重试的实例，字符串数字: "100" |
-| ├          | `load_balance_type`      |             | string              | 设置负载均衡类型。可选，默认使用配置文件中设置的类型                    |
-| ├          | `metadata_failover_type` |             | string              | 设置元数据路由匹配失败时的降级策略，默认不降级                          |
-| ├          | `labels`                 |             | map<string, string> | 设置请求标签，用于接口级别熔断                                          |
-| ⎿          | `source`                 |             | map<string, string> | 设置源服务信息，用于服务路由计算。可选                                  |
-|            | ├                        | `namespace` | string              | 实例的标签信息                                                          |
-|            | ├                        | `service`   | string              | 实例的标签信息                                                          |
-|            | ⎿                        | `metadata`  | map<string, string> | 实例的标签信息                                                          |
+| 参数名称   |                                     |             | 参数类型            | 参数用途                                                                     |
+| :--------- | :---------------------------------- | :---------- | :------------------ | :--------------------------------------------------------------------------- |
+| `timeout`  |                                     |             | long                | 超时时间，单位毫秒                                                           |
+| `flowId`   |                                     |             | long                | 本次请求的标识ID                                                             |
+| `instance` |                                     |             | map<string, object> |                                                                              |
+| ├          | `namespace`                         |             | string              | 被调服务所在的命名空间                                                       |
+| ├          | `service`                           |             | string              | 被调服务名称                                                                 |
+| ├          | `include_unhealthy_instances`       |             | string              | 设置服务路由时否包含不健康的服务实例。可选，默认不包含, 字符串bool值："true" |
+| ├          | `include_circuit_breaker_instances` |             | string              | 设置服务路由时是否包含熔断的服务实例。可选，默认不包含, 字符串bool值："true" |
+| ├          | `skip_route_filter`                 |             | string              | 设置是否跳过服务路由。可选，默认不跳过服务路由, 字符串bool值："true"         |
+| ├          | `canary`                            |             | string              | 设置调用哪个金丝雀服务实例                                                   |
+| ├          | `source_set_name`                   |             | string              | 设置调用哪个set下的服务                                                      |
+| ├          | `metadata_failover_type`            |             | string              | 设置元数据路由匹配失败时的降级策略，默认不降级                               |
+| ⎿          | `source`                            |             | map<string, string> | 设置源服务信息，用于服务路由计算。可选                                       |
+|            | ├                                   | `namespace` | string              | 实例的标签信息                                                               |
+|            | ├                                   | `service`   | string              | 实例的标签信息                                                               |
+|            | ⎿                                   | `metadata`  | map<string, string> | 实例的标签信息                                                               |
 
 
 
@@ -652,30 +645,24 @@ var_dump($res);
 
 *请求参数*
 
-| 参数名称   |                          |             | 参数类型            | 参数用途                                                                |
-| :--------- | :----------------------- | :---------- | :------------------ | :---------------------------------------------------------------------- |
-| `timeout`  |                          |             | long                | 超时时间，单位毫秒                                                      |
-| `flowId`   |                          |             | long                | 本次请求的标识ID                                                        |
-| `instance` |                          |             | map<string, object> |                                                                         |
-| ├          | `namespace`              |             | string              | 被调服务所在的命名空间                                                  |
-| ├          | `service`                |             | string              | 被调服务名称                                                            |
-| ├          | `version`                |             | string              | 实例版本                                                                |
-| ├          | `vpc_id`                 |             | string              | 实例所在的VPC_ID信息                                                    |
-| ├          | `metadata`               |             | map<string, string> | 设置元数据，用于元数据路由                                              |
-| ├          | `canary`                 |             | string              | 设置调用哪个金丝雀服务实例                                              |
-| ├          | `source_set_name`        |             | string              | 设置调用哪个set下的服务                                                 |
-| ├          | `ignore_half_open`       |             | string              | 设置是否略过跳过半开探测节点, "trur" or "false"                         |
-| ├          | `hash_string`            |             | string              | 设置 hash 字符串，用于一致性哈希负载均衡算法，字符串数字: "100"         |
-| ├          | `hash_key`               |             | string              | 设置hash key，用于一致性哈希负载均衡算法                                |
-| ├          | `replicate_index`        |             | string              | 用于一致性hash算法时获取副本实例，字符串数字: "100"                     |
-| ├          | `backup_instance_num`    |             | string              | 设置用于重试的实例数。可选，默认不返回用于重试的实例，字符串数字: "100" |
-| ├          | `load_balance_type`      |             | string              | 设置负载均衡类型。可选，默认使用配置文件中设置的类型                    |
-| ├          | `metadata_failover_type` |             | string              | 设置元数据路由匹配失败时的降级策略，默认不降级                          |
-| ├          | `labels`                 |             | map<string, string> | 设置请求标签，用于接口级别熔断                                          |
-| ⎿          | `source`                 |             | map<string, string> | 设置源服务信息，用于服务路由计算。可选                                  |
-|            | ├                        | `namespace` | string              | 实例的标签信息                                                          |
-|            | ├                        | `service`   | string              | 实例的标签信息                                                          |
-|            | ⎿                        | `metadata`  | map<string, string> | 实例的标签信息                                                          |
+| 参数名称   |                                     |             | 参数类型            | 参数用途                                                                     |
+| :--------- | :---------------------------------- | :---------- | :------------------ | :--------------------------------------------------------------------------- |
+| `timeout`  |                                     |             | long                | 超时时间，单位毫秒                                                           |
+| `flowId`   |                                     |             | long                | 本次请求的标识ID                                                             |
+| `instance` |                                     |             | map<string, object> |                                                                              |
+| ├          | `namespace`                         |             | string              | 被调服务所在的命名空间                                                       |
+| ├          | `service`                           |             | string              | 被调服务名称                                                                 |
+| ├          | `include_unhealthy_instances`       |             | string              | 设置服务路由时否包含不健康的服务实例。可选，默认不包含, 字符串bool值："true" |
+| ├          | `include_circuit_breaker_instances` |             | string              | 设置服务路由时是否包含熔断的服务实例。可选，默认不包含, 字符串bool值："true" |
+| ├          | `skip_route_filter`                 |             | string              | 设置是否跳过服务路由。可选，默认不跳过服务路由, 字符串bool值："true"         |
+| ├          | `canary`                            |             | string              | 设置调用哪个金丝雀服务实例                                                   |
+| ├          | `source_set_name`                   |             | string              | 设置调用哪个set下的服务                                                      |
+| ├          | `metadata_failover_type`            |             | string              | 设置元数据路由匹配失败时的降级策略，默认不降级                               |
+| ⎿          | `source`                            |             | map<string, string> | 设置源服务信息，用于服务路由计算。可选                                       |
+|            | ├                                   | `namespace` | string              | 实例的标签信息                                                               |
+|            | ├                                   | `service`   | string              | 实例的标签信息                                                               |
+|            | ⎿                                   | `metadata`  | map<string, string> | 实例的标签信息                                                               |
+
 
 
 

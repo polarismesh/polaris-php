@@ -26,8 +26,7 @@ make && make package
     |-- libpolaris_api.a libprotobuf.a
 ```
 
-对文件`polaris_cpp_sdk.tar.gz`进行解压，将`slib`目录下的`libpolaris_api.a`以及`libprotobuf.a`拷贝到本项目(`polaris-php`)
-的`lib`目录下
+对文件`polaris_cpp_sdk.tar.gz`进行解压，将`slib`目录下的`libpolaris_api.a`以及`libprotobuf.a`拷贝到本项目(`polaris-php`)的`lib`目录下
 
 ```shell
 cd {你的一个目录}/polaris-cpp
