@@ -34,11 +34,11 @@ extern "C"
  */
 static polaris::LimitCallResultType convertToLimitCallResultType(string val)
 {
-    if (val.compare("Limit"))
+    if (val.compare("Limit") == 0)
     {
         return polaris::kLimitCallResultLimited;
     }
-    if (val.compare("Failed"))
+    if (val.compare("Failed") == 0)
     {
         return polaris::kLimitCallResultFailed;
     }
@@ -56,40 +56,39 @@ static polaris::QuotaRequest ConvertToQuotaRequest(zval *reqVal)
     map<string, string> params = TransferToStdMap(Z_ARRVAL_P(reqVal));
     zval **labelsVal, **subsetVal;
     map<string, string> labels = map<string, string>();
-    map<string, string> subset = map<string, string>();
 
-    if (zend_hash_find(HASH_OF(reqVal), Labels.c_str(), sizeof(Labels), (void **)&labelsVal) == SUCCESS && Z_TYPE_PP(labelsVal) == IS_ARRAY)
+    polaris::QuotaRequest req;
+
+    if (zend_hash_find(HASH_OF(reqVal), Labels.c_str(), getKeyLength(Labels), (void **)&labelsVal) == SUCCESS)
     {
         labels = TransferToStdMap(Z_ARRVAL_PP(labelsVal));
     }
 
-    if (zend_hash_find(HASH_OF(reqVal), ServiceSubSet.c_str(), sizeof(ServiceSubSet), (void **)(&subsetVal)) == SUCCESS)
+    if (zend_hash_find(HASH_OF(reqVal), ServiceSubSet.c_str(), getKeyLength(ServiceSubSet), (void **)(&subsetVal)) == SUCCESS)
     {
-        subset = TransferToStdMap(Z_ARRVAL_PP(subsetVal));
+        req.SetSubset(TransferToStdMap(Z_ARRVAL_PP(subsetVal)));
     }
 
     string tmp = params[Amount];
-    if (string("").compare(tmp))
+    if (string("").compare(tmp) == 0)
     {
-        tmp = "0";
+        tmp = "1";
     }
 
-    polaris::QuotaRequest req;
     req.SetServiceNamespace(params[Namespace]);
     req.SetServiceName(params[Service]);
     req.SetAcquireAmount(atoi(tmp.c_str()));
-    req.SetSubset(subset);
     req.SetLabels(labels);
 
     return req;
 }
 
 // /**
-//  * @brief 
-//  * 
-//  * @param limit 
-//  * @param reqVal 
-//  * @return polaris::ReturnCode 
+//  * @brief
+//  *
+//  * @param limit
+//  * @param reqVal
+//  * @return polaris::ReturnCode
 //  */
 // static polaris::ReturnCode DoFetchRule(polaris::LimitApi *limit, zval *reqVal, uint64_t timeout, zval *returnVal)
 // {
@@ -109,12 +108,12 @@ static polaris::QuotaRequest ConvertToQuotaRequest(zval *reqVal)
 // }
 
 // /**
-//  * @brief 
-//  * 
-//  * @param limit 
-//  * @param reqVal 
-//  * @param timeout 
-//  * @return polaris::ReturnCode 
+//  * @brief
+//  *
+//  * @param limit
+//  * @param reqVal
+//  * @param timeout
+//  * @return polaris::ReturnCode
 //  */
 // static polaris::ReturnCode DoFetchRuleLabelKeys(polaris::LimitApi *limit, zval *reqVal, uint64_t timeout, zval *returnVal)
 // {
@@ -209,7 +208,7 @@ static polaris::ReturnCode DoUpdateCallResult(polaris::LimitApi *limit, zval *re
     zval **labelsVal, **subsetVal;
     map<string, string> labels, subset;
 
-    if (zend_hash_find(HASH_OF(reqVal), Labels.c_str(), sizeof(Labels), (void **)&labelsVal) == SUCCESS && Z_TYPE_PP(labelsVal) == IS_ARRAY)
+    if (zend_hash_find(HASH_OF(reqVal), Labels.c_str(), getKeyLength(Labels), (void **)&labelsVal) == SUCCESS && Z_TYPE_PP(labelsVal) == IS_ARRAY)
     {
         labels = TransferToStdMap(Z_ARRVAL_PP(labelsVal));
     }
@@ -218,7 +217,7 @@ static polaris::ReturnCode DoUpdateCallResult(polaris::LimitApi *limit, zval *re
         labels = map<string, string>();
     }
 
-    if (zend_hash_find(HASH_OF(reqVal), ServiceSubSet.c_str(), sizeof(ServiceSubSet), (void **)(&subsetVal)) == SUCCESS)
+    if (zend_hash_find(HASH_OF(reqVal), ServiceSubSet.c_str(), getKeyLength(ServiceSubSet), (void **)(&subsetVal)) == SUCCESS)
     {
         subset = TransferToStdMap(Z_ARRVAL_PP(subsetVal));
     }
@@ -240,6 +239,7 @@ static polaris::ReturnCode DoUpdateCallResult(polaris::LimitApi *limit, zval *re
     string errMsg = polaris::ReturnCodeToMsg(code);
     add_assoc_long(returnVal, Code.c_str(), code);
     add_assoc_stringl(returnVal, ErrMsg.c_str(), (char *)errMsg.c_str(), errMsg.length(), 1);
+
     return code;
 }
 

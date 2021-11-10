@@ -186,7 +186,7 @@ PHP_METHOD(PolarisClient, Register)
     uint64_t timeout = 500;
     uint64_t flowId;
 
-    if (ZEND_NUM_ARGS() == 4)
+    if (ZEND_NUM_ARGS() == 3)
     {
         // 识别参数信息
         if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "a|ll", &registerVal, &timeout, &flowId))
@@ -268,7 +268,7 @@ PHP_METHOD(PolarisClient, Heartbeat)
     // 实例心跳信息原始参数信息
     zval *heartbeatVal;
 
-    if (ZEND_NUM_ARGS() == 3)
+    if (ZEND_NUM_ARGS() == 1)
     {
         // 识别参数信息
         if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "a", &heartbeatVal))
