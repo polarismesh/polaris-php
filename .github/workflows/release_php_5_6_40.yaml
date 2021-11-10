@@ -27,6 +27,8 @@ jobs:
           POLARIS_CPP_VERSION: ${{ github.event.inputs.polaris_cpp_version }}
         run: |
           set -e
+          cur_pwd=$(pwd)
+          cd ../
           git clone https://github.com/polarismesh/polaris-cpp.git
           cd polaris-cpp
           git checkout ${POLARIS_CPP_VERSION}
@@ -38,9 +40,9 @@ jobs:
           tar -zxvf polaris_cpp_sdk.tar.gz
 
           # 拷贝 slib 目录下的文件到 polaris-php 中
-          cd ../
+          cd ${cur_pwd}/
           mkdir -p lib/
-          mv polaris-cpp/slib/* ./lib
+          mv ../polaris-cpp/slib/* ./lib
       - name: Build Polaris-PHP For 5.6.40
         run: |
           phpize --clean

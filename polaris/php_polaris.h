@@ -85,12 +85,12 @@ PHP_METHOD(PolarisClient, GetOneInstance);
 PHP_METHOD(PolarisClient, GetInstances);
 PHP_METHOD(PolarisClient, GetAllInstances);
 PHP_METHOD(PolarisClient, UpdateServiceCallResult);
-PHP_METHOD(PolarisClient, GetRouteRuleKeys);
+// PHP_METHOD(PolarisClient, GetRouteRuleKeys);
 
 // Limit
 // 必须要先执行 InitLimit 才可以执行
-PHP_METHOD(PolarisClient, FetchRule);
-PHP_METHOD(PolarisClient, FetchRuleLabelKeys);
+// PHP_METHOD(PolarisClient, FetchRule);
+// PHP_METHOD(PolarisClient, FetchRuleLabelKeys);
 PHP_METHOD(PolarisClient, GetQuota);
 PHP_METHOD(PolarisClient, UpdateCallResult);
 PHP_METHOD(PolarisClient, InitQuotaWindow);

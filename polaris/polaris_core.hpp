@@ -51,14 +51,14 @@ zend_function_entry polaris_core_functions[] = {
     PHP_ME(PolarisClient, GetInstances, NULL, ZEND_ACC_PUBLIC)            /**/
     PHP_ME(PolarisClient, GetAllInstances, NULL, ZEND_ACC_PUBLIC)         /**/
     PHP_ME(PolarisClient, UpdateServiceCallResult, NULL, ZEND_ACC_PUBLIC) /**/
-    PHP_ME(PolarisClient, GetRouteRuleKeys, NULL, ZEND_ACC_PUBLIC)        /**/
+    // PHP_ME(PolarisClient, GetRouteRuleKeys, NULL, ZEND_ACC_PUBLIC)        /**/
 
     // Limit
-    PHP_ME(PolarisClient, FetchRule, NULL, ZEND_ACC_PUBLIC)          /**/
-    PHP_ME(PolarisClient, FetchRuleLabelKeys, NULL, ZEND_ACC_PUBLIC) /**/
-    PHP_ME(PolarisClient, GetQuota, NULL, ZEND_ACC_PUBLIC)           /**/
-    PHP_ME(PolarisClient, UpdateCallResult, NULL, ZEND_ACC_PUBLIC)   /**/
-    PHP_ME(PolarisClient, InitQuotaWindow, NULL, ZEND_ACC_PUBLIC)    /**/
+    // PHP_ME(PolarisClient, FetchRule, NULL, ZEND_ACC_PUBLIC)          /**/
+    // PHP_ME(PolarisClient, FetchRuleLabelKeys, NULL, ZEND_ACC_PUBLIC) /**/
+    PHP_ME(PolarisClient, GetQuota, NULL, ZEND_ACC_PUBLIC)         /**/
+    PHP_ME(PolarisClient, UpdateCallResult, NULL, ZEND_ACC_PUBLIC) /**/
+    PHP_ME(PolarisClient, InitQuotaWindow, NULL, ZEND_ACC_PUBLIC)  /**/
     PHP_FE_END};
 
 struct polaris_core_object
@@ -325,76 +325,76 @@ PHP_METHOD(PolarisClient, InitLimit)
     obj->mtx.unlock();
 }
 
-PHP_METHOD(PolarisClient, FetchRule)
-{
+// PHP_METHOD(PolarisClient, FetchRule)
+// {
 
-    array_init(return_value);
-    // 注册实例信息原始参数信息
-    zval *fetchVal;
-    uint64_t timeout = 500;
+//     array_init(return_value);
+//     // 注册实例信息原始参数信息
+//     zval *fetchVal;
+//     uint64_t timeout = 500;
 
-    if (ZEND_NUM_ARGS() == 2)
-    {
-        // 识别参数信息
-        if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "a|l", &fetchVal, &timeout))
-        {
-            RETURN_LONG(-1);
-        }
-    }
-    else
-    {
-        WRONG_PARAM_COUNT;
-        RETURN_LONG(-1);
-    }
+//     if (ZEND_NUM_ARGS() == 2)
+//     {
+//         // 识别参数信息
+//         if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "a|l", &fetchVal, &timeout))
+//         {
+//             RETURN_LONG(-1);
+//         }
+//     }
+//     else
+//     {
+//         WRONG_PARAM_COUNT;
+//         RETURN_LONG(-1);
+//     }
 
-    // 找到对应的 C++ 实例缓存信息
-    polaris_core_object *obj = (polaris_core_object *)zend_object_store_get_object(getThis() TSRMLS_CC);
-    polaris::LimitApi *limit = obj->limit;
-    if (limit != nullptr)
-    {
-        polaris::ReturnCode code = DoFetchRule(limit, fetchVal, timeout, return_value);
-        return;
-    }
-    string errMsg = "polaris limit instance is nullptr";
-    add_assoc_long(return_value, Code.c_str(), -1);
-    add_assoc_stringl(return_value, ErrMsg.c_str(), (char *)errMsg.c_str(), errMsg.length(), 1);
-    return;
-}
+//     // 找到对应的 C++ 实例缓存信息
+//     polaris_core_object *obj = (polaris_core_object *)zend_object_store_get_object(getThis() TSRMLS_CC);
+//     polaris::LimitApi *limit = obj->limit;
+//     if (limit != nullptr)
+//     {
+//         polaris::ReturnCode code = DoFetchRule(limit, fetchVal, timeout, return_value);
+//         return;
+//     }
+//     string errMsg = "polaris limit instance is nullptr";
+//     add_assoc_long(return_value, Code.c_str(), -1);
+//     add_assoc_stringl(return_value, ErrMsg.c_str(), (char *)errMsg.c_str(), errMsg.length(), 1);
+//     return;
+// }
 
-PHP_METHOD(PolarisClient, FetchRuleLabelKeys)
-{
-    array_init(return_value);
-    // 注册实例信息原始参数信息
-    zval *fetchVal;
-    uint64_t timeout = 500;
+// PHP_METHOD(PolarisClient, FetchRuleLabelKeys)
+// {
+//     array_init(return_value);
+//     // 注册实例信息原始参数信息
+//     zval *fetchVal;
+//     uint64_t timeout = 500;
 
-    if (ZEND_NUM_ARGS() == 2)
-    {
-        // 识别参数信息
-        if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "a|l", &fetchVal, &timeout))
-        {
-            RETURN_LONG(-1);
-        }
-    }
-    else
-    {
-        WRONG_PARAM_COUNT;
-        RETURN_LONG(-1);
-    }
+//     if (ZEND_NUM_ARGS() == 2)
+//     {
+//         // 识别参数信息
+//         if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "a|l", &fetchVal, &timeout))
+//         {
+//             RETURN_LONG(-1);
+//         }
+//     }
+//     else
+//     {
+//         WRONG_PARAM_COUNT;
+//         RETURN_LONG(-1);
+//     }
 
-    // 找到对应的 C++ 实例缓存信息
-    polaris_core_object *obj = (polaris_core_object *)zend_object_store_get_object(getThis() TSRMLS_CC);
-    polaris::LimitApi *limit = obj->limit;
-    if (limit != nullptr)
-    {
-        polaris::ReturnCode code = DoFetchRuleLabelKeys(limit, fetchVal, timeout, return_value);
-        return;
-    }
-    string errMsg = "polaris limit instance is nullptr";
-    add_assoc_long(return_value, Code.c_str(), -1);
-    add_assoc_stringl(return_value, ErrMsg.c_str(), (char *)errMsg.c_str(), errMsg.length(), 1);
-    return;
-}
+//     // 找到对应的 C++ 实例缓存信息
+//     polaris_core_object *obj = (polaris_core_object *)zend_object_store_get_object(getThis() TSRMLS_CC);
+//     polaris::LimitApi *limit = obj->limit;
+//     if (limit != nullptr)
+//     {
+//         polaris::ReturnCode code = DoFetchRuleLabelKeys(limit, fetchVal, timeout, return_value);
+//         return;
+//     }
+//     string errMsg = "polaris limit instance is nullptr";
+//     add_assoc_long(return_value, Code.c_str(), -1);
+//     add_assoc_stringl(return_value, ErrMsg.c_str(), (char *)errMsg.c_str(), errMsg.length(), 1);
+//     return;
+// }
 
 PHP_METHOD(PolarisClient, GetQuota)
 {
@@ -718,43 +718,43 @@ PHP_METHOD(PolarisClient, UpdateServiceCallResult)
     return;
 }
 
-/**
- * @brief Construct a new php method object
- * 
- */
-PHP_METHOD(PolarisClient, GetRouteRuleKeys)
-{
-    array_init(return_value);
-    zval *reqVal;
-    uint64_t timeout;
+// /**
+//  * @brief Construct a new php method object
+//  *
+//  */
+// PHP_METHOD(PolarisClient, GetRouteRuleKeys)
+// {
+//     array_init(return_value);
+//     zval *reqVal;
+//     uint64_t timeout;
 
-    if (ZEND_NUM_ARGS() == 1)
-    {
-        // 识别参数信息
-        if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "a|l", &reqVal, &timeout))
-        {
-            RETURN_LONG(-1);
-        }
-    }
-    else
-    {
-        WRONG_PARAM_COUNT;
-        RETURN_LONG(-1);
-    }
+//     if (ZEND_NUM_ARGS() == 1)
+//     {
+//         // 识别参数信息
+//         if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "a|l", &reqVal, &timeout))
+//         {
+//             RETURN_LONG(-1);
+//         }
+//     }
+//     else
+//     {
+//         WRONG_PARAM_COUNT;
+//         RETURN_LONG(-1);
+//     }
 
-    // 找到对应的 C++ 实例缓存信息
-    polaris_core_object *obj = (polaris_core_object *)zend_object_store_get_object(getThis() TSRMLS_CC);
-    polaris::ConsumerApi *consumer = obj->consumer;
-    if (consumer != nullptr)
-    {
-        polaris::ReturnCode code = DoGetRouteRuleKeys(consumer, reqVal, timeout, return_value);
-        return;
-    }
-    string errMsg = "polaris consumer instance is nullptr";
-    add_assoc_long(return_value, Code.c_str(), -1);
-    add_assoc_stringl(return_value, ErrMsg.c_str(), (char *)errMsg.c_str(), errMsg.length(), 1);
-    return;
-}
+//     // 找到对应的 C++ 实例缓存信息
+//     polaris_core_object *obj = (polaris_core_object *)zend_object_store_get_object(getThis() TSRMLS_CC);
+//     polaris::ConsumerApi *consumer = obj->consumer;
+//     if (consumer != nullptr)
+//     {
+//         polaris::ReturnCode code = DoGetRouteRuleKeys(consumer, reqVal, timeout, return_value);
+//         return;
+//     }
+//     string errMsg = "polaris consumer instance is nullptr";
+//     add_assoc_long(return_value, Code.c_str(), -1);
+//     add_assoc_stringl(return_value, ErrMsg.c_str(), (char *)errMsg.c_str(), errMsg.length(), 1);
+//     return;
+// }
 
 /*
 =================== ConsumerApi for PHP end ===================

@@ -84,66 +84,66 @@ static polaris::QuotaRequest ConvertToQuotaRequest(zval *reqVal)
     return req;
 }
 
-/**
- * @brief 
- * 
- * @param limit 
- * @param reqVal 
- * @return polaris::ReturnCode 
- */
-static polaris::ReturnCode DoFetchRule(polaris::LimitApi *limit, zval *reqVal, uint64_t timeout, zval *returnVal)
-{
-    map<string, string> params = TransferToStdMap(Z_ARRVAL_P(reqVal));
+// /**
+//  * @brief 
+//  * 
+//  * @param limit 
+//  * @param reqVal 
+//  * @return polaris::ReturnCode 
+//  */
+// static polaris::ReturnCode DoFetchRule(polaris::LimitApi *limit, zval *reqVal, uint64_t timeout, zval *returnVal)
+// {
+//     map<string, string> params = TransferToStdMap(Z_ARRVAL_P(reqVal));
 
-    polaris::ServiceKey key = {params[Namespace], params[Service]};
-    string jsonRule;
+//     polaris::ServiceKey key = {params[Namespace], params[Service]};
+//     string jsonRule;
 
-    polaris::ReturnCode code = limit->FetchRule(key, timeout, jsonRule);
+//     polaris::ReturnCode code = limit->FetchRule(key, timeout, jsonRule);
 
-    string errMsg = polaris::ReturnCodeToMsg(code);
+//     string errMsg = polaris::ReturnCodeToMsg(code);
 
-    add_assoc_long(returnVal, Code.c_str(), code);
-    add_assoc_stringl(returnVal, ErrMsg.c_str(), (char *)errMsg.c_str(), errMsg.length(), 1);
-    add_assoc_stringl(returnVal, LimitRuleJsonStr.c_str(), (char *)jsonRule.c_str(), jsonRule.length(), 1);
-    return code;
-}
+//     add_assoc_long(returnVal, Code.c_str(), code);
+//     add_assoc_stringl(returnVal, ErrMsg.c_str(), (char *)errMsg.c_str(), errMsg.length(), 1);
+//     add_assoc_stringl(returnVal, LimitRuleJsonStr.c_str(), (char *)jsonRule.c_str(), jsonRule.length(), 1);
+//     return code;
+// }
 
-/**
- * @brief 
- * 
- * @param limit 
- * @param reqVal 
- * @param timeout 
- * @return polaris::ReturnCode 
- */
-static polaris::ReturnCode DoFetchRuleLabelKeys(polaris::LimitApi *limit, zval *reqVal, uint64_t timeout, zval *returnVal)
-{
-    map<string, string> params = TransferToStdMap(Z_ARRVAL_P(reqVal));
+// /**
+//  * @brief 
+//  * 
+//  * @param limit 
+//  * @param reqVal 
+//  * @param timeout 
+//  * @return polaris::ReturnCode 
+//  */
+// static polaris::ReturnCode DoFetchRuleLabelKeys(polaris::LimitApi *limit, zval *reqVal, uint64_t timeout, zval *returnVal)
+// {
+//     map<string, string> params = TransferToStdMap(Z_ARRVAL_P(reqVal));
 
-    polaris::ServiceKey key = {params[Namespace], params[Service]};
+//     polaris::ServiceKey key = {params[Namespace], params[Service]};
 
-    const set<string> *labelKeys = nullptr;
-    polaris::ReturnCode code = limit->FetchRuleLabelKeys(key, timeout, labelKeys);
+//     const set<string> *labelKeys = nullptr;
+//     polaris::ReturnCode code = limit->FetchRuleLabelKeys(key, timeout, labelKeys);
 
-    string errMsg = polaris::ReturnCodeToMsg(code);
-    add_assoc_long(returnVal, Code.c_str(), code);
-    add_assoc_stringl(returnVal, ErrMsg.c_str(), (char *)errMsg.c_str(), errMsg.length(), 1);
+//     string errMsg = polaris::ReturnCodeToMsg(code);
+//     add_assoc_long(returnVal, Code.c_str(), code);
+//     add_assoc_stringl(returnVal, ErrMsg.c_str(), (char *)errMsg.c_str(), errMsg.length(), 1);
 
-    if (code == polaris::kReturnOk && labelKeys != nullptr)
-    {
-        zval *arr;
-        ALLOC_INIT_ZVAL(arr);
-        array_init_size(arr, labelKeys->size());
-        for (set<string>::iterator iter = labelKeys->begin(); iter != labelKeys->end(); iter++)
-        {
-            std::cout << *iter << " , " << endl;
-            add_next_index_string(arr, ((string)(*iter)).c_str(), 1);
-        }
-        add_assoc_zval(returnVal, LimitLabelKeys.c_str(), arr);
-    }
+//     if (code == polaris::kReturnOk && labelKeys != nullptr)
+//     {
+//         zval *arr;
+//         ALLOC_INIT_ZVAL(arr);
+//         array_init_size(arr, labelKeys->size());
+//         for (set<string>::iterator iter = labelKeys->begin(); iter != labelKeys->end(); iter++)
+//         {
+//             std::cout << *iter << " , " << endl;
+//             add_next_index_string(arr, ((string)(*iter)).c_str(), 1);
+//         }
+//         add_assoc_zval(returnVal, LimitLabelKeys.c_str(), arr);
+//     }
 
-    return code;
-}
+//     return code;
+// }
 
 /**
  * @brief 获取配额

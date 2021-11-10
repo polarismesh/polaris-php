@@ -623,39 +623,39 @@ static polaris::ReturnCode DoUpdateServiceCallResult(polaris::ConsumerApi *consu
     return code;
 }
 
-/**
- * @brief 拉取路由规则配置的所有key
- * 
- * @param consumer 
- * @param val 
- * @param timeout 
- * @return polaris::ReturnCode 
- */
-static polaris::ReturnCode DoGetRouteRuleKeys(polaris::ConsumerApi *consumer, zval *reqVal, uint64_t timeout, zval *returnVal)
-{
-    map<string, string> params = TransferToStdMap(Z_ARRVAL_P(reqVal));
+// /**
+//  * @brief 拉取路由规则配置的所有key
+//  * 
+//  * @param consumer 
+//  * @param val 
+//  * @param timeout 
+//  * @return polaris::ReturnCode 
+//  */
+// static polaris::ReturnCode DoGetRouteRuleKeys(polaris::ConsumerApi *consumer, zval *reqVal, uint64_t timeout, zval *returnVal)
+// {
+//     map<string, string> params = TransferToStdMap(Z_ARRVAL_P(reqVal));
 
-    polaris::ServiceKey key = {params[Namespace], params[Service]};
+//     polaris::ServiceKey key = {params[Namespace], params[Service]};
 
-    const set<string> *ruleKeys = nullptr;
-    polaris::ReturnCode code = consumer->GetRouteRuleKeys(key, timeout, ruleKeys);
+//     const set<string> *ruleKeys = nullptr;
+//     polaris::ReturnCode code = consumer->GetRouteRuleKeys(key, timeout, ruleKeys);
 
-    string errMsg = polaris::ReturnCodeToMsg(code);
-    add_assoc_long(returnVal, Code.c_str(), code);
-    add_assoc_stringl(returnVal, ErrMsg.c_str(), (char *)errMsg.c_str(), errMsg.length(), 1);
+//     string errMsg = polaris::ReturnCodeToMsg(code);
+//     add_assoc_long(returnVal, Code.c_str(), code);
+//     add_assoc_stringl(returnVal, ErrMsg.c_str(), (char *)errMsg.c_str(), errMsg.length(), 1);
 
-    if (code == polaris::kReturnOk && ruleKeys != nullptr)
-    {
-        zval *arr;
-        ALLOC_INIT_ZVAL(arr);
-        array_init_size(arr, ruleKeys->size());
-        for (set<string>::iterator iter = ruleKeys->begin(); iter != ruleKeys->end(); iter++)
-        {
-            std::cout << *iter << " , " << endl;
-            add_next_index_string(arr, ((string)(*iter)).c_str(), 1);
-        }
-        add_assoc_zval(returnVal, RuleKeys.c_str(), arr);
-    }
+//     if (code == polaris::kReturnOk && ruleKeys != nullptr)
+//     {
+//         zval *arr;
+//         ALLOC_INIT_ZVAL(arr);
+//         array_init_size(arr, ruleKeys->size());
+//         for (set<string>::iterator iter = ruleKeys->begin(); iter != ruleKeys->end(); iter++)
+//         {
+//             std::cout << *iter << " , " << endl;
+//             add_next_index_string(arr, ((string)(*iter)).c_str(), 1);
+//         }
+//         add_assoc_zval(returnVal, RuleKeys.c_str(), arr);
+//     }
 
-    return code;
-}
+//     return code;
+// }

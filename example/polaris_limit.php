@@ -13,24 +13,6 @@ $polaris = new PolarisClient(array(
 
 $polaris->InitLimit();
 
-$req_test_1 = array(
-	"namespace" => "default",
-	"service" => "polaris_php_test",
-);
-
-// FetchRuleLabelKeys
-$res = $polaris->FetchRule($req_test_1, 1000);
-var_dump($req_test_1);
-var_dump($res);
-
-$req_test_2 = array(
-	"namespace" => "default",
-	"service" => "polaris_php_test",
-);
-
-// FetchRuleLabelKeys
-$res = $polaris->FetchRuleLabelKeys($req_test_2, 1000);
-
 var_dump($req_test_1);
 var_dump($res);
 
