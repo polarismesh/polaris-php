@@ -16,7 +16,7 @@ $polaris -> InitProvider();
 // 实例注册信息
 $register_instance_info = array(
 	"namespace" => "default",
-	"service" => "php_ext_test",
+	"service" => "polaris_php_test",
 	"host" => "127.0.0.3",
 	"port" => "8080",
 	"heartbeat" => "true",
@@ -31,39 +31,41 @@ $register_instance_info = array(
 
 // 执行实例注册动作
 $res = $polaris->Register($register_instance_info, 5000, 1);
-print $res;
-var_dump($register_instance_info);
+var_dump($res);
 
 
-print "sleep 20 second"
-// 睡眠等待一段时间，不发实例心跳
-sleep(20);
-
-// 实例注册信息
+// 实例心跳信息
 $heartbeat_info = array(
 	"namespace" => "default",
-	"service" => "php_ext_test",
+	"service" => "polaris_php_test",
 	"host" => "127.0.0.3",
 	"port" => "8080",
 );
 
-// 执行实例注册动作
-$res = $polaris->Heartbeat($heartbeat_info, 5000, 1);
+// 先进行一次心跳上报，触发实例租约计算任务
+$res = $polaris->Heartbeat($heartbeat_info);
+var_dump($res);
 
+print "sleep 20 second\n";
+// 睡眠等待一段时间，不发实例心跳
+sleep(120);
+
+// 执行实例注册动作
+$res = $polaris->Heartbeat($heartbeat_info);
+var_dump($res);
 // 在等待一段时间
-sleep(10)
+sleep(10);
 
 
 // 实例反注册信息
 $deregister_instance_info = array(
 	"namespace" => "default",
-	"service" => "php_ext_test",
+	"service" => "polaris_php_test",
 	"host" => "127.0.0.3",
 	"port" => "8080",
 );
 
 // 执行实例反注册动作
 $res = $polaris->Deregister($deregister_instance_info, 5000, 1);
-print $res;
-var_dump($deregister_instance_info);
+var_dump($res);
 ?>

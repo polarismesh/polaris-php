@@ -19,17 +19,16 @@ var_dump($res);
 $req_test_3 = array(
 	"namespace" => "default",
 	"service" => "polaris_php_test",
-	"limit_labels" => array(
-		"env" => "pre"
+	"labels" => array(
+		"env" => "pre",
+		"method" => "GetUserInfo"
 	),
-	"subset" => array(
-		"set_1" => "cluster_1"
-	)
 );
 
 // FetchRuleLabelKeys
 $res = $polaris->GetQuota($req_test_3);
+var_dump($res);
 
-var_dump($req_test_3);
+$res = $polaris->GetQuota($req_test_3);
 var_dump($res);
 ?>
