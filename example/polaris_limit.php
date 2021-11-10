@@ -13,41 +13,22 @@ $polaris = new PolarisClient(array(
 
 $polaris->InitLimit();
 
-$req_test_1 = array(
-	"namespace" => "default",
-	"service" => "polaris_php_test",
-);
-
-// FetchRuleLabelKeys
-$res = $polaris->FetchRule($req_test_1, 1000);
-var_dump($req_test_1);
-var_dump($res);
-
-$req_test_2 = array(
-	"namespace" => "default",
-	"service" => "polaris_php_test",
-);
-
-// FetchRuleLabelKeys
-$res = $polaris->FetchRuleLabelKeys($req_test_2, 1000);
-
 var_dump($req_test_1);
 var_dump($res);
 
 $req_test_3 = array(
 	"namespace" => "default",
 	"service" => "polaris_php_test",
-	"limit_labels" => array(
-		"env" => "pre"
+	"labels" => array(
+		"env" => "pre",
+		"method" => "GetUserInfo"
 	),
-	"subset" => array(
-		"set_1" => "cluster_1"
-	)
 );
 
 // FetchRuleLabelKeys
 $res = $polaris->GetQuota($req_test_3);
+var_dump($res);
 
-var_dump($req_test_3);
+$res = $polaris->GetQuota($req_test_3);
 var_dump($res);
 ?>

@@ -18,6 +18,7 @@ extern "C"
 #include <sstream>
 #include <iostream>
 #include <map>
+#include "common.hpp"
 
 static void PolarisOutputDebugString(zend_bool trigger_break, const char *format, ...) /* {{{ */
 {
@@ -108,6 +109,11 @@ static map<string, string> TransferToStdMap(HashTable *ht)
     }
 
     return metadata;
+}
+
+static uint getKeyLength(string val)
+{
+    return val.length() + 1;
 }
 
 #endif

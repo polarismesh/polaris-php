@@ -40,7 +40,7 @@ static polaris::ReturnCode RegisterInstance(polaris::ProviderApi *provider, zval
     map<string, string> params = TransferToStdMap(Z_ARRVAL_P(reqVal));
     map<string, string> metadata = map<string, string>();
 
-    if (zend_hash_find(HASH_OF(reqVal), Metadata.c_str(), sizeof(Metadata), (void **)(&metadataVal)) == SUCCESS)
+    if (zend_hash_find(HASH_OF(reqVal), Metadata.c_str(), getKeyLength(Metadata), (void **)(&metadataVal)) == SUCCESS)
     {
         metadata = TransferToStdMap(Z_ARRVAL_PP(metadataVal));
     }
@@ -48,8 +48,13 @@ static polaris::ReturnCode RegisterInstance(polaris::ProviderApi *provider, zval
     int port = atoi(params[Port].c_str());
     int weight = atoi(params[Weight].c_str());
     int priority = atoi(params[Priority].c_str());
-    int ttl = atoi(params[Ttl].c_str());
-    bool healthcheck = string("true").compare(params[HeartbeatFlag]);
+    bool healthcheck = string("true").compare(params[HeartbeatFlag]) == 0;
+    int ttl = 0;
+    if (healthcheck)
+    {
+        ttl = atoi(params[Ttl].c_str());
+    }
+
     string tmp = params[Token];
     string token = tmp.empty() ? "polaris_php_sdk__" + params[Service] : tmp;
 
@@ -62,9 +67,7 @@ static polaris::ReturnCode RegisterInstance(polaris::ProviderApi *provider, zval
     req.SetVpcId(params[VpcID]);
     req.SetVersion(params[Version]);
     req.SetMetadata(metadata);
-
     req.SetHealthCheckFlag(healthcheck);
-
     req.SetTtl(ttl);
     req.SetWeight(weight);
     req.SetFlowId(flowId);

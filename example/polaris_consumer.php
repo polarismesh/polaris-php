@@ -13,5 +13,13 @@ $polaris = new PolarisClient(array(
 
 $polaris -> InitConsumer();
 
+$get_req = array(
+	"namespace" => "default",
+	"service" => "polaris_consumer_test",
+
+);
+
+$res = $polaris->GetInstances($get_req, 5000, 1);
+var_dump($res);
 
 ?>
