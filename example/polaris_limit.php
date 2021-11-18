@@ -13,9 +13,6 @@ $polaris = new PolarisClient(array(
 
 $polaris->InitLimit();
 
-var_dump($req_test_1);
-var_dump($res);
-
 $req_test_3 = array(
 	"namespace" => "default",
 	"service" => "polaris_php_test",
