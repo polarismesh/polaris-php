@@ -40,4 +40,3 @@ tests/*/*.sh
 /php
 polaris.log
 build.sh
-polaris.yaml
