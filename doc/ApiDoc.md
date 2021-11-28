@@ -766,11 +766,11 @@ var_dump($res);
 | `code`         |                     | int                 | 方法执行状态码                                             |
 | `err_msg`      |                     | string              | 错误信息                                                   |
 | `quota_result` |                     | map<string, object> | 规则里配置的所有key                                        |
-|                | `wait_time`         | long                | 规则里配置的所有key                                        |
-|                | `degrade`           | bool                | 规则里配置的所有key                                        |
-|                | `duration`          | long                | 规则里配置的所有key                                        |
-|                | `quota_left`        | long                | 规则里配置的所有key                                        |
-|                | `quota_all`         | long                | 规则里配置的所有key                                        |
+|                | `wait_time`         | long                | 请求需要获取多长时间才能使用配额                           |
+|                | `degrade`           | bool                | 是否降级                                                   |
+|                | `duration`          | long                | 配置周期                                                   |
+|                | `quota_left`        | long                | 剩余配额                                                   |
+|                | `quota_all`         | long                | 配置的配额                                                 |
 |                | `quota_result_code` | long                | 配额获取结果(0:配额正常，1:配额被限流，2:需求需要等待重试) |
 
 > 具体代码使用示例
@@ -824,8 +824,8 @@ arra(
 
 | 一级参数名称    | 参数类型            | 参数用途                         |
 | :-------------- | :------------------ | :------------------------------- |
-| `namespace`     | long                | 超时时间，单位毫秒               |
-| `service`       | long                | 超时时间，单位毫秒               |
+| `namespace`     | long                | 命名空间                         |
+| `service`       | long                | 服务名称                         |
 | `response_time` | string              | 请求响应时间，字符串数字："1000" |
 | `respont_type`  | string              | "Limit"、"Failed"、"OK"          |
 | `respont_code`  | long                | 本次请求的标识ID                 |

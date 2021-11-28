@@ -7,13 +7,13 @@ if(!extension_loaded('polaris')) {
 
 // 创建一个 polaris-provider 实例
 $polaris = new PolarisClient(array(
-	"config_path" => "/root/Github/polaris-php/polaris.yaml",
+	"config_path" => "./polaris.yaml",
 	"log_dir" => "./"
 ));
 
 $polaris->InitLimit();
 
-$req_test_3 = array(
+$client_req = array(
 	"namespace" => "default",
 	"service" => "polaris_php_test",
 	"labels" => array(
@@ -23,9 +23,9 @@ $req_test_3 = array(
 );
 
 // FetchRuleLabelKeys
-$res = $polaris->GetQuota($req_test_3);
+$res = $polaris->GetQuota($client_req);
 var_dump($res);
 
-$res = $polaris->GetQuota($req_test_3);
+$res = $polaris->GetQuota($client_req);
 var_dump($res);
 ?>
