@@ -36,3 +36,6 @@ API use guide，can reference：[ApiDoc](doc/ApiDoc.md)
 ### Example
 
 API quick start guide，can reference：[QuickStart](example)
+
+
+./configure --prefix=/usr/local/php74

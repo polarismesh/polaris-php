@@ -32,7 +32,7 @@ extern "C"
 #include "utils.hpp"
 
 // 定义一个 PHP 对象用于持有 ProviderApi 这个对象的实例
-zend_object_handlers polaris_core_object_handlers;
+static zend_object_handlers polaris_core_object_handlers;
 
 zend_function_entry polaris_core_functions[] = {
     PHP_ME(PolarisClient, __construct, NULL, ZEND_ACC_PUBLIC | ZEND_ACC_CTOR) /**/
@@ -71,37 +71,38 @@ struct polaris_core_object
     std::mutex mtx;
 };
 
-void polaris_core_free_storage(void *object TSRMLS_DC)
+static inline polaris_core_object *hsf_fetch_object(zend_object *obj) /* {{{ */
 {
-    polaris_core_object *obj = (polaris_core_object *)object;
+    return (polaris_core_object *)((char *)(obj)-XtOffsetOf(polaris_core_object, std));
+}
+/* }}} */
+#define Z_USEROBJ_P(zv) hsf_fetch_object(Z_OBJ_P((zv)))
+
+void polaris_core_free_storage(zend_object *object)
+{
+    polaris_core_object *obj = (polaris_core_object *)hsf_fetch_object(object);
     delete obj->provider;
     delete obj->consumer;
     delete obj->limit;
+    delete obj->globalCtx;
 
     zend_object_std_dtor(&obj->std TSRMLS_CC);
     efree(obj);
 }
 
-zend_object_value polaris_core_create_handler(zend_class_entry *cls_type TSRMLS_DC)
+zend_object *polaris_core_create_handler(zend_class_entry *cls_type TSRMLS_DC)
 {
-    zend_object_value retval;
-    polaris_core_object *intern;
-
     /* Allocate memory for it */
-    intern = (polaris_core_object *)emalloc(sizeof(polaris_core_object));
-    memset(intern, 0, sizeof(polaris_core_object));
+    polaris_core_object *intern = (polaris_core_object *)ecalloc(1, sizeof(polaris_core_object) + zend_object_properties_size(cls_type));
 
     zend_object_std_init(&intern->std, cls_type TSRMLS_CC);
     object_properties_init(&intern->std, cls_type);
 
-    retval.handle = zend_objects_store_put(
-        intern,
-        (zend_objects_store_dtor_t)zend_objects_destroy_object,
-        (zend_objects_free_object_storage_t)polaris_core_free_storage,
-        NULL TSRMLS_CC);
-    retval.handlers = (zend_object_handlers *)&polaris_core_object_handlers;
+    polaris_core_object_handlers.offset = XtOffsetOf(polaris_core_object, std);
+    polaris_core_object_handlers.free_obj = polaris_core_free_storage;
+    intern->std.handlers = &polaris_core_object_handlers;
 
-    return retval;
+    return &intern->std;
 }
 
 // 定义 PolarisClient 的构造函数，这里就只支持一种吧，直接传入对应的配置文件地址用于初始化
@@ -112,7 +113,7 @@ PHP_METHOD(PolarisClient, __construct)
     if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "a", &arg))
     {
         zend_error(E_WARNING, "get parameter for config path failed");
-        RETURN_LONG(-1);
+        exit(EXIT_FAILURE);
     }
 
     HashTable *paramMap = Z_ARRVAL_P(arg);
@@ -124,27 +125,34 @@ PHP_METHOD(PolarisClient, __construct)
     polaris::GetLogger()->SetLogDir(params[LogDir]);
 
     string errMsg;
-
     polaris::Config *config = polaris::Config::CreateFromFile(params[ConfigPath], errMsg);
 
     if (config == nullptr || config == NULL)
     {
+        std::cout << errMsg << std::endl;
         zend_error(E_WARNING, "create polaris config failed");
-        RETURN_NULL();
+        exit(EXIT_FAILURE);
     }
 
-    polaris_core_object *obj = (polaris_core_object *)zend_object_store_get_object(getThis() TSRMLS_CC);
+    zval *object = getThis();
 
+    // 找到对应的 C++ 实例缓存信息
+    polaris_core_object *obj = (polaris_core_object *)Z_USEROBJ_P(object TSRMLS_CC);
     if (obj == nullptr)
     {
         RETURN_NULL();
     }
-
     // static PHP_METHOD(PDO, dbh_constructor)
     obj->globalCtx = polaris::Context::Create(config, polaris::kShareContext);
     obj->provider = NULL;
     obj->consumer = NULL;
     obj->limit = NULL;
+
+    if (obj->globalCtx == nullptr)
+    {
+        zend_error(E_WARNING, "create polaris SDKContext failed");
+        exit(EXIT_FAILURE);
+    }
 }
 
 /*
@@ -153,11 +161,11 @@ PHP_METHOD(PolarisClient, __construct)
 
 /**
  * @brief Construct a new php method object
- * 
+ *
  */
 PHP_METHOD(PolarisClient, InitProvider)
 {
-    polaris_core_object *obj = (polaris_core_object *)zend_object_store_get_object(getThis() TSRMLS_CC);
+    polaris_core_object *obj = (polaris_core_object *)Z_USEROBJ_P(getThis() TSRMLS_CC);
 
     if (obj == nullptr)
     {
@@ -174,7 +182,7 @@ PHP_METHOD(PolarisClient, InitProvider)
 
 /**
  * @brief Construct a new php method object
- * 
+ *
  */
 PHP_METHOD(PolarisClient, Register)
 {
@@ -201,8 +209,7 @@ PHP_METHOD(PolarisClient, Register)
         RETURN_LONG(-1);
     }
 
-    // 找到对应的 C++ 实例缓存信息
-    polaris_core_object *obj = (polaris_core_object *)zend_object_store_get_object(getThis() TSRMLS_CC);
+    polaris_core_object *obj = (polaris_core_object *)Z_USEROBJ_P(getThis() TSRMLS_CC);
 
     polaris::ProviderApi *provider = obj->provider;
     if (provider != nullptr)
@@ -212,13 +219,13 @@ PHP_METHOD(PolarisClient, Register)
     }
     string errMsg = "polaris provider instance is nullptr";
     add_assoc_long(return_value, Code.c_str(), -1);
-    add_assoc_stringl(return_value, ErrMsg.c_str(), (char *)errMsg.c_str(), errMsg.length(), 1);
+    add_assoc_stringl(return_value, ErrMsg.c_str(), (char *)errMsg.c_str(), errMsg.length());
     return;
 }
 
 /**
  * @brief Construct a new php method object
- * 
+ *
  */
 PHP_METHOD(PolarisClient, Deregister)
 {
@@ -242,9 +249,7 @@ PHP_METHOD(PolarisClient, Deregister)
         WRONG_PARAM_COUNT;
         RETURN_LONG(-1);
     }
-
-    // 找到对应的 C++ 实例缓存信息
-    polaris_core_object *obj = (polaris_core_object *)zend_object_store_get_object(getThis() TSRMLS_CC);
+    polaris_core_object *obj = (polaris_core_object *)Z_USEROBJ_P(getThis() TSRMLS_CC);
     polaris::ProviderApi *provider = obj->provider;
     if (provider != nullptr)
     {
@@ -253,13 +258,13 @@ PHP_METHOD(PolarisClient, Deregister)
     }
     string errMsg = "polaris provider instance is nullptr";
     add_assoc_long(return_value, Code.c_str(), -1);
-    add_assoc_stringl(return_value, ErrMsg.c_str(), (char *)errMsg.c_str(), errMsg.length(), 1);
+    add_assoc_stringl(return_value, ErrMsg.c_str(), (char *)errMsg.c_str(), errMsg.length());
     return;
 }
 
 /**
  * @brief Construct a new php method object
- * 
+ *
  */
 PHP_METHOD(PolarisClient, Heartbeat)
 {
@@ -281,9 +286,7 @@ PHP_METHOD(PolarisClient, Heartbeat)
         WRONG_PARAM_COUNT;
         RETURN_LONG(-1);
     }
-
-    // 找到对应的 C++ 实例缓存信息
-    polaris_core_object *obj = (polaris_core_object *)zend_object_store_get_object(getThis() TSRMLS_CC);
+    polaris_core_object *obj = (polaris_core_object *)Z_USEROBJ_P(getThis() TSRMLS_CC);
     polaris::ProviderApi *provider = obj->provider;
     if (provider != nullptr)
     {
@@ -292,7 +295,7 @@ PHP_METHOD(PolarisClient, Heartbeat)
     }
     string errMsg = "polaris provider instance is nullptr";
     add_assoc_long(return_value, Code.c_str(), -1);
-    add_assoc_stringl(return_value, ErrMsg.c_str(), (char *)errMsg.c_str(), errMsg.length(), 1);
+    add_assoc_stringl(return_value, ErrMsg.c_str(), (char *)errMsg.c_str(), errMsg.length());
     return;
 }
 
@@ -306,11 +309,11 @@ PHP_METHOD(PolarisClient, Heartbeat)
 
 /**
  * @brief Construct a new php method object
- * 
+ *
  */
 PHP_METHOD(PolarisClient, InitLimit)
 {
-    polaris_core_object *obj = (polaris_core_object *)zend_object_store_get_object(getThis() TSRMLS_CC);
+    polaris_core_object *obj = (polaris_core_object *)Z_USEROBJ_P(getThis() TSRMLS_CC);
 
     if (obj == nullptr)
     {
@@ -414,9 +417,7 @@ PHP_METHOD(PolarisClient, GetQuota)
         WRONG_PARAM_COUNT;
         RETURN_LONG(-1);
     }
-
-    // 找到对应的 C++ 实例缓存信息
-    polaris_core_object *obj = (polaris_core_object *)zend_object_store_get_object(getThis() TSRMLS_CC);
+    polaris_core_object *obj = (polaris_core_object *)Z_USEROBJ_P(getThis() TSRMLS_CC);
     polaris::LimitApi *limit = obj->limit;
     if (limit != nullptr)
     {
@@ -425,7 +426,7 @@ PHP_METHOD(PolarisClient, GetQuota)
     }
     string errMsg = "polaris limit instance is nullptr";
     add_assoc_long(return_value, Code.c_str(), -1);
-    add_assoc_stringl(return_value, ErrMsg.c_str(), (char *)errMsg.c_str(), errMsg.length(), 1);
+    add_assoc_stringl(return_value, ErrMsg.c_str(), (char *)errMsg.c_str(), errMsg.length());
     return;
 }
 
@@ -448,8 +449,7 @@ PHP_METHOD(PolarisClient, UpdateCallResult)
         RETURN_LONG(-1);
     }
 
-    // 找到对应的 C++ 实例缓存信息
-    polaris_core_object *obj = (polaris_core_object *)zend_object_store_get_object(getThis() TSRMLS_CC);
+    polaris_core_object *obj = (polaris_core_object *)Z_USEROBJ_P(getThis() TSRMLS_CC);
     polaris::LimitApi *limit = obj->limit;
     if (limit != nullptr)
     {
@@ -458,13 +458,13 @@ PHP_METHOD(PolarisClient, UpdateCallResult)
     }
     string errMsg = "polaris limit instance is nullptr";
     add_assoc_long(return_value, Code.c_str(), -1);
-    add_assoc_stringl(return_value, ErrMsg.c_str(), (char *)errMsg.c_str(), errMsg.length(), 1);
+    add_assoc_stringl(return_value, ErrMsg.c_str(), (char *)errMsg.c_str(), errMsg.length());
     return;
 }
 
 /**
  * @brief Construct a new php method object
- * 
+ *
  */
 PHP_METHOD(PolarisClient, InitQuotaWindow)
 {
@@ -485,8 +485,7 @@ PHP_METHOD(PolarisClient, InitQuotaWindow)
         RETURN_LONG(-1);
     }
 
-    // 找到对应的 C++ 实例缓存信息
-    polaris_core_object *obj = (polaris_core_object *)zend_object_store_get_object(getThis() TSRMLS_CC);
+    polaris_core_object *obj = (polaris_core_object *)Z_USEROBJ_P(getThis() TSRMLS_CC);
     polaris::LimitApi *limit = obj->limit;
     if (limit != nullptr)
     {
@@ -495,7 +494,7 @@ PHP_METHOD(PolarisClient, InitQuotaWindow)
     }
     string errMsg = "polaris limit instance is nullptr";
     add_assoc_long(return_value, Code.c_str(), -1);
-    add_assoc_stringl(return_value, ErrMsg.c_str(), (char *)errMsg.c_str(), errMsg.length(), 1);
+    add_assoc_stringl(return_value, ErrMsg.c_str(), (char *)errMsg.c_str(), errMsg.length());
     return;
 }
 
@@ -509,11 +508,11 @@ PHP_METHOD(PolarisClient, InitQuotaWindow)
 
 /**
  * @brief Construct a new php method object
- * 
+ *
  */
 PHP_METHOD(PolarisClient, InitConsumer)
 {
-    polaris_core_object *obj = (polaris_core_object *)zend_object_store_get_object(getThis() TSRMLS_CC);
+    polaris_core_object *obj = (polaris_core_object *)Z_USEROBJ_P(getThis() TSRMLS_CC);
 
     if (obj == nullptr)
     {
@@ -530,7 +529,7 @@ PHP_METHOD(PolarisClient, InitConsumer)
 
 /**
  * @brief Construct a new php method object
- * 
+ *
  */
 PHP_METHOD(PolarisClient, InitService)
 {
@@ -552,8 +551,7 @@ PHP_METHOD(PolarisClient, InitService)
         RETURN_LONG(-1);
     }
 
-    // 找到对应的 C++ 实例缓存信息
-    polaris_core_object *obj = (polaris_core_object *)zend_object_store_get_object(getThis() TSRMLS_CC);
+    polaris_core_object *obj = (polaris_core_object *)Z_USEROBJ_P(getThis() TSRMLS_CC);
     polaris::ConsumerApi *consumer = obj->consumer;
     if (consumer != nullptr)
     {
@@ -562,13 +560,13 @@ PHP_METHOD(PolarisClient, InitService)
     }
     string errMsg = "polaris consumer instance is nullptr";
     add_assoc_long(return_value, Code.c_str(), -1);
-    add_assoc_stringl(return_value, ErrMsg.c_str(), (char *)errMsg.c_str(), errMsg.length(), 1);
+    add_assoc_stringl(return_value, ErrMsg.c_str(), (char *)errMsg.c_str(), errMsg.length());
     return;
 }
 
 /**
  * @brief Construct a new php method object
- * 
+ *
  */
 PHP_METHOD(PolarisClient, GetOneInstance)
 {
@@ -590,8 +588,7 @@ PHP_METHOD(PolarisClient, GetOneInstance)
         RETURN_LONG(-1);
     }
 
-    // 找到对应的 C++ 实例缓存信息
-    polaris_core_object *obj = (polaris_core_object *)zend_object_store_get_object(getThis() TSRMLS_CC);
+    polaris_core_object *obj = (polaris_core_object *)Z_USEROBJ_P(getThis() TSRMLS_CC);
     polaris::ConsumerApi *consumer = obj->consumer;
     if (consumer != nullptr)
     {
@@ -600,13 +597,13 @@ PHP_METHOD(PolarisClient, GetOneInstance)
     }
     string errMsg = "polaris consumer instance is nullptr";
     add_assoc_long(return_value, Code.c_str(), -1);
-    add_assoc_stringl(return_value, ErrMsg.c_str(), (char *)errMsg.c_str(), errMsg.length(), 1);
+    add_assoc_stringl(return_value, ErrMsg.c_str(), (char *)errMsg.c_str(), errMsg.length());
     return;
 }
 
 /**
  * @brief Construct a new php method object
- * 
+ *
  */
 PHP_METHOD(PolarisClient, GetInstances)
 {
@@ -627,9 +624,7 @@ PHP_METHOD(PolarisClient, GetInstances)
         WRONG_PARAM_COUNT;
         RETURN_LONG(-1);
     }
-
-    // 找到对应的 C++ 实例缓存信息
-    polaris_core_object *obj = (polaris_core_object *)zend_object_store_get_object(getThis() TSRMLS_CC);
+    polaris_core_object *obj = (polaris_core_object *)Z_USEROBJ_P(getThis() TSRMLS_CC);
     polaris::ConsumerApi *consumer = obj->consumer;
     if (consumer != nullptr)
     {
@@ -638,13 +633,13 @@ PHP_METHOD(PolarisClient, GetInstances)
     }
     string errMsg = "polaris consumer instance is nullptr";
     add_assoc_long(return_value, Code.c_str(), -1);
-    add_assoc_stringl(return_value, ErrMsg.c_str(), (char *)errMsg.c_str(), errMsg.length(), 1);
+    add_assoc_stringl(return_value, ErrMsg.c_str(), (char *)errMsg.c_str(), errMsg.length());
     return;
 }
 
 /**
  * @brief Construct a new php method object
- * 
+ *
  */
 PHP_METHOD(PolarisClient, GetAllInstances)
 {
@@ -666,8 +661,7 @@ PHP_METHOD(PolarisClient, GetAllInstances)
         RETURN_LONG(-1);
     }
 
-    // 找到对应的 C++ 实例缓存信息
-    polaris_core_object *obj = (polaris_core_object *)zend_object_store_get_object(getThis() TSRMLS_CC);
+    polaris_core_object *obj = (polaris_core_object *)Z_USEROBJ_P(getThis() TSRMLS_CC);
     polaris::ConsumerApi *consumer = obj->consumer;
     if (consumer != nullptr)
     {
@@ -676,13 +670,13 @@ PHP_METHOD(PolarisClient, GetAllInstances)
     }
     string errMsg = "polaris consumer instance is nullptr";
     add_assoc_long(return_value, Code.c_str(), -1);
-    add_assoc_stringl(return_value, ErrMsg.c_str(), (char *)errMsg.c_str(), errMsg.length(), 1);
+    add_assoc_stringl(return_value, ErrMsg.c_str(), (char *)errMsg.c_str(), errMsg.length());
     return;
 }
 
 /**
  * @brief Construct a new php method object
- * 
+ *
  */
 PHP_METHOD(PolarisClient, UpdateServiceCallResult)
 {
@@ -704,8 +698,7 @@ PHP_METHOD(PolarisClient, UpdateServiceCallResult)
         RETURN_LONG(-1);
     }
 
-    // 找到对应的 C++ 实例缓存信息
-    polaris_core_object *obj = (polaris_core_object *)zend_object_store_get_object(getThis() TSRMLS_CC);
+    polaris_core_object *obj = (polaris_core_object *)Z_USEROBJ_P(getThis() TSRMLS_CC);
     polaris::ConsumerApi *consumer = obj->consumer;
     if (consumer != nullptr)
     {
@@ -714,7 +707,7 @@ PHP_METHOD(PolarisClient, UpdateServiceCallResult)
     }
     string errMsg = "polaris consumer instance is nullptr";
     add_assoc_long(return_value, Code.c_str(), -1);
-    add_assoc_stringl(return_value, ErrMsg.c_str(), (char *)errMsg.c_str(), errMsg.length(), 1);
+    add_assoc_stringl(return_value, ErrMsg.c_str(), (char *)errMsg.c_str(), errMsg.length());
     return;
 }
 

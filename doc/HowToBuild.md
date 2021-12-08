@@ -59,15 +59,15 @@ cd {你的一个目录}/polaris-cpp
 
 ### 构建 Polaris PHP
 
-确保本地默认的`php`版本为`5.6.40`
+确保本地默认的`php`版本为`5.6.x`或者为`7.4.x`版本
 
 ```shell
 
 cd ./polaris
 # clean last build info
-phpize --clean  #确保是php-5.6.40的版本
+phpize --clean
 
-phpize  #确保是php-5.6.40的版本
+phpize
 
 ./configure  --with-php-config=${php-config 文件的全路径信息}  --with-polaris_provider
 

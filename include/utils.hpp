@@ -49,19 +49,19 @@ static void PolarisHashDisplay(const HashTable *ht)
     Bucket *p;
     uint i;
 
-    if (UNEXPECTED(ht->nNumOfElements == 0) || ht == nullptr)
+    if (UNEXPECTED(ht->nNumOfElements == 0))
     {
         PolarisOutputDebugString(0, "The hash is empty");
         return;
     }
-    for (i = 0; i < ht->nTableSize; i++)
+    for (i = 0; i < ht->nNumUsed; ++i)
     {
-        p = ht->arBuckets[i];
-        while (p != NULL)
+        Bucket *b = &ht->arData[i];
+        if (Z_ISUNDEF(b->val))
         {
-            PolarisOutputDebugString(0, "%s <==> 0x%lX\n", p->arKey, p->h);
-            p = p->pNext;
+            continue;
         }
+        PolarisOutputDebugString(0, "%s <==> 0x%lX\n", b->key, b->val);
     }
 }
 
@@ -74,13 +74,14 @@ static void PolarisHashDisplay(const HashTable *ht)
 static zval *TransferMapToArray(map<string, string> metadata)
 {
     zval *metadataArr;
-    ALLOC_INIT_ZVAL(metadataArr);
-    array_init(metadataArr);
+    zval tmpArr;
+    array_init(&tmpArr);
+    metadataArr = &tmpArr;
 
     for (map<string, string>::iterator iter = metadata.begin(); iter != metadata.end(); iter++)
     {
         char *valN = const_cast<char *>(iter->second.c_str());
-        add_assoc_string(metadataArr, iter->first.c_str(), valN, 1);
+        add_assoc_string(metadataArr, iter->first.c_str(), valN);
     }
 
     return metadataArr;
@@ -92,22 +93,19 @@ static map<string, string> TransferToStdMap(HashTable *ht)
     {
         return map<string, string>();
     }
-    Bucket *p;
-
     map<string, string> metadata = map<string, string>();
 
-    p = ht->pListTail;
-    while (p != nullptr)
+    uint32_t i;
+    for (i = 0; i < ht->nNumUsed; ++i)
     {
+        Bucket *b = &ht->arData[i];
+        if (Z_ISUNDEF(b->val))
+        {
+            continue;
+        }
 
-        zval **data = ((zval **)(p->pData));
-        // convert_to_string_ex(data);
-        metadata.insert({string(p->arKey), string(Z_STRVAL_PP(data))});
-
-        Bucket *p_last = p->pListLast;
-        p = p_last;
+        metadata.insert({string(ZSTR_VAL(b->key)), string(Z_STRVAL(b->val))});
     }
-
     return metadata;
 }
 
