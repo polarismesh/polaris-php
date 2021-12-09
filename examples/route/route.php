@@ -18,14 +18,9 @@ $client_req = array(
 	"service" => "polaris_php_test",
 	"labels" => array(
 		"env" => "pre",
-		"method" => "GetUserInfo"
 	),
 );
 
-// FetchRuleLabelKeys
-$res = $polaris->GetQuota($client_req);
-var_dump($res);
-
-$res = $polaris->GetQuota($client_req);
-var_dump($res);
+$res = $polaris->GetOneInstance($get_req, 5000, 1);
+$instances = $res["response"]["instances"];
 ?>
