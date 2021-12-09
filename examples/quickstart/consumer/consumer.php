@@ -16,7 +16,6 @@ $polaris -> InitConsumer();
 $get_req = array(
 	"namespace" => "default",
 	"service" => "polaris_php_test",
-
 );
 
 $res = $polaris->GetOneInstance($get_req, 5000, 1);

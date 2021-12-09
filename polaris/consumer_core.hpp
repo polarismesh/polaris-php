@@ -59,9 +59,9 @@ static polaris::CallRetStatus convertToCallRetStatus(string val)
 
 /**
  * @brief 将 polaris::Instance 转换为 php 的 array
- * 
- * @param inst 
- * @return zval* 
+ *
+ * @param inst
+ * @return zval*
  */
 static zval *convertInstanceToArray(polaris::Instance inst)
 {
@@ -278,12 +278,12 @@ static zval *convertServiceResponseToZval(polaris::InstancesResponse *resp)
 
 /**
  * @brief 用于提前初始化服务数据
- * 
- * @param consumer 
- * @param reqVal 
- * @param timeout 
- * @param flowId 
- * @return polaris::ReturnCode 
+ *
+ * @param consumer
+ * @param reqVal
+ * @param timeout
+ * @param flowId
+ * @return polaris::ReturnCode
  */
 static polaris::ReturnCode DoInitService(polaris::ConsumerApi *consumer, zval *reqVal, uint64_t timeout, uint64_t flowId, zval *returnVal)
 {
@@ -350,12 +350,12 @@ static polaris::ReturnCode DoInitService(polaris::ConsumerApi *consumer, zval *r
 
 /**
  * @brief 同步获取单个服务实例
- * 
- * @param consumer 
- * @param reqVal 
- * @param timeout 
- * @param flowId 
- * @return polaris::ReturnCode 
+ *
+ * @param consumer
+ * @param reqVal
+ * @param timeout
+ * @param flowId
+ * @return polaris::ReturnCode
  */
 static polaris::ReturnCode DoGetOneInstance(polaris::ConsumerApi *consumer, zval *reqVal, uint64_t timeout, uint64_t flowId, zval *returnVal)
 {
@@ -391,15 +391,15 @@ static polaris::ReturnCode DoGetOneInstance(polaris::ConsumerApi *consumer, zval
     // 获取被调用服务的元数据信息
     if (zend_hash_find(HASH_OF(reqVal), Labels.c_str(), getKeyLength(Labels), (void **)(&labelsVal)) == SUCCESS)
     {
-        labels = TransferToStdMap(Z_ARRVAL_PP(metadataVal));
+        labels = TransferToStdMap(Z_ARRVAL_PP(labelsVal));
     }
     req.SetLabels(labels);
 
     if (zend_hash_find(HASH_OF(reqVal), SourceService.c_str(), getKeyLength(SourceService), (void **)(&sourceServiceVal)) == SUCCESS)
     {
-        // 获取被调服务的信息数据
+        // 获取主调服务的信息数据
         sourceService = TransferToStdMap(Z_ARRVAL_PP(sourceServiceVal));
-        // 获取被调服务的 metadata 数据
+        // 获取主调服务的 metadata 数据
         if (zend_hash_find(HASH_OF(*sourceServiceVal), Metadata.c_str(), getKeyLength(Metadata), (void **)(&srcmetaVal)) == SUCCESS)
         {
             sourceMetadata = TransferToStdMap(Z_ARRVAL_PP(srcmetaVal));
@@ -430,12 +430,12 @@ static polaris::ReturnCode DoGetOneInstance(polaris::ConsumerApi *consumer, zval
 /**
  * @brief 同步获取批量服务实例
  * @note 该接口不会返回熔断半开实例，实例熔断后，进入半开如何没有请求一段时间后会自动恢复
- * 
- * @param consumer 
- * @param reqVal 
- * @param timeout 
- * @param flowId 
- * @return polaris::ReturnCode 
+ *
+ * @param consumer
+ * @param reqVal
+ * @param timeout
+ * @param flowId
+ * @return polaris::ReturnCode
  */
 static polaris::ReturnCode DoGetInstances(polaris::ConsumerApi *consumer, zval *reqVal, uint64_t timeout, uint64_t flowId, zval *returnVal)
 {
@@ -500,12 +500,12 @@ static polaris::ReturnCode DoGetInstances(polaris::ConsumerApi *consumer, zval *
 
 /**
  * @brief 同步获取服务下全部服务实例，返回的实例与控制台看到的一致
- * 
- * @param consumer 
- * @param reqVal 
- * @param timeout 
- * @param flowId 
- * @return polaris::ReturnCode 
+ *
+ * @param consumer
+ * @param reqVal
+ * @param timeout
+ * @param flowId
+ * @return polaris::ReturnCode
  */
 static polaris::ReturnCode DoGetAllInstances(polaris::ConsumerApi *consumer, zval *reqVal, uint64_t timeout, uint64_t flowId, zval *returnVal)
 {
@@ -571,10 +571,10 @@ static polaris::ReturnCode DoGetAllInstances(polaris::ConsumerApi *consumer, zva
 /**
  * @brief 上报服务调用结果，用于服务实例熔断和监控统计
  * @note 本调用没有网络操作，只是将数据写入内存
- * 
- * @param consumer 
- * @param val 
- * @return polaris::ReturnCode 
+ *
+ * @param consumer
+ * @param val
+ * @return polaris::ReturnCode
  */
 static polaris::ReturnCode DoUpdateServiceCallResult(polaris::ConsumerApi *consumer, zval *reqVal, uint64_t timeout, uint64_t flowId, zval *returnVal)
 {
