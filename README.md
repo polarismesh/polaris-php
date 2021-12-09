@@ -1,7 +1,9 @@
 # polaris-php
 
+Polaris is an operation centre that supports multiple programming languages, with high compatibility to different
+application framework. Polaris-php is php SDK for Polaris.
 
-Polaris is an operation centre that supports multiple programming languages, with high compatibility to different application framework. Polaris-php is php SDK for Polaris.
+[中文文档](./README_ZH.md)
 
 ## Overview
 
@@ -35,4 +37,4 @@ API use guide，can reference：[ApiDoc](doc/ApiDoc.md)
 
 ### Example
 
-API quick start guide，can reference：[QuickStart](example)
+API quick start guide，can reference：[QuickStart](./examples/quickstart)
