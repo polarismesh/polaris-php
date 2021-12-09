@@ -1,6 +1,6 @@
 # RateLimit Example
 
-Based on a simple polaris-php usage example, demonstrate how a php application can quickly use Polaris' service current limiting function.
+Based on a simple polaris-php usage example, demonstrate how a php application can quickly use Polaris' service RateLimit.
 
 ## How to build
 

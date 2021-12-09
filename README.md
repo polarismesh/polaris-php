@@ -29,11 +29,11 @@ Polaris-php provide features listed as below:
 
 ### Build Polaris-PHP
 
-You can see this document to build polaris-php: [BuildDoc](doc/HowToBuild.md)
+You can see this document to build polaris-php: [BuildDoc](./doc/HowToBuild.md)
 
 ### Using API
 
-API use guide，can reference：[ApiDoc](doc/ApiDoc.md)
+API use guide，can reference：[ApiDoc](./doc/ApiDoc.md)
 
 ### Example
 
