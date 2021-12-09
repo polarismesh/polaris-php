@@ -40,16 +40,21 @@ static polaris::ReturnCode RegisterInstance(polaris::ProviderApi *provider, zval
     map<string, string> params = TransferToStdMap(Z_ARRVAL_P(reqVal));
     map<string, string> metadata = map<string, string>();
 
-    if (zend_hash_find(HASH_OF(reqVal), Metadata, sizeof(Metadata), (void **)(&metadataVal)) == SUCCESS)
+    if (zend_hash_find(HASH_OF(reqVal), Metadata.c_str(), getKeyLength(Metadata), (void **)(&metadataVal)) == SUCCESS)
     {
-        metadata = TransferToStdMap(Z_ARRVAL_P(metadataVal));
+        metadata = TransferToStdMap(Z_ARRVAL_PP(metadataVal));
     }
 
     int port = atoi(params[Port].c_str());
     int weight = atoi(params[Weight].c_str());
     int priority = atoi(params[Priority].c_str());
-    int ttl = atoi(params[Ttl].c_str());
-    bool healthcheck = string("true").compare(params[HeartbeatFlag]);
+    bool healthcheck = string("true").compare(params[HeartbeatFlag]) == 0;
+    int ttl = 0;
+    if (healthcheck)
+    {
+        ttl = atoi(params[Ttl].c_str());
+    }
+
     string tmp = params[Token];
     string token = tmp.empty() ? "polaris_php_sdk__" + params[Service] : tmp;
 
@@ -62,9 +67,7 @@ static polaris::ReturnCode RegisterInstance(polaris::ProviderApi *provider, zval
     req.SetVpcId(params[VpcID]);
     req.SetVersion(params[Version]);
     req.SetMetadata(metadata);
-
     req.SetHealthCheckFlag(healthcheck);
-
     req.SetTtl(ttl);
     req.SetWeight(weight);
     req.SetFlowId(flowId);
@@ -73,9 +76,9 @@ static polaris::ReturnCode RegisterInstance(polaris::ProviderApi *provider, zval
     string instanceId;
     polaris::ReturnCode code = provider->Register(req, instanceId);
     string errMsg = polaris::ReturnCodeToMsg(code);
-    add_assoc_long(returnVal, Code, code);
-    add_assoc_stringl(returnVal, ErrMsg, (char *)errMsg.c_str(), errMsg.length(), 1);
-    add_assoc_stringl(returnVal, InstanceID, (char *)instanceId.c_str(), instanceId.length(), 1);
+    add_assoc_long(returnVal, Code.c_str(), code);
+    add_assoc_stringl(returnVal, ErrMsg.c_str(), (char *)errMsg.c_str(), errMsg.length(), 1);
+    add_assoc_stringl(returnVal, InstanceID.c_str(), (char *)instanceId.c_str(), instanceId.length(), 1);
 
     return code;
 }
@@ -107,8 +110,8 @@ static polaris::ReturnCode DeregisterInstance(polaris::ProviderApi *provider, zv
     polaris::ReturnCode code = provider->Deregister(req);
     // 返回值回插入到 register_req 中？
     string errMsg = polaris::ReturnCodeToMsg(code);
-    add_assoc_long(returnVal, Code, code);
-    add_assoc_stringl(returnVal, ErrMsg, (char *)errMsg.c_str(), errMsg.length(), 1);
+    add_assoc_long(returnVal, Code.c_str(), code);
+    add_assoc_stringl(returnVal, ErrMsg.c_str(), (char *)errMsg.c_str(), errMsg.length(), 1);
     return code;
 }
 
@@ -134,7 +137,7 @@ static polaris::ReturnCode DoHeartbeat(polaris::ProviderApi *provider, zval *req
     polaris::ReturnCode code = provider->Heartbeat(req);
     // 返回值回插入到 register_req 中？
     string errMsg = polaris::ReturnCodeToMsg(code);
-    add_assoc_long(returnVal, Code, code);
-    add_assoc_stringl(returnVal, ErrMsg, (char *)errMsg.c_str(), errMsg.length(), 1);
+    add_assoc_long(returnVal, Code.c_str(), code);
+    add_assoc_stringl(returnVal, ErrMsg.c_str(), (char *)errMsg.c_str(), errMsg.length(), 1);
     return code;
 }

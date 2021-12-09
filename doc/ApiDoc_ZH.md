@@ -337,7 +337,7 @@ var_dump($res);
 | ├            | `load_balance_type`      |              | string              | 设置负载均衡类型。可选，默认使用配置文件中设置的类型 |
 | ├            | `metadata_failover_type` |              | string              | 设置元数据路由匹配失败时的降级策略，默认不降级       |
 | ├            | `labels`                 |              | map<string, string> | 设置请求标签，用于接口级别熔断                       |
-| ⎿            | `source`                 |              | map<string, object> | 设置源服务信息，用于服务路由计算。可选               |
+| ⎿            | `source_service`         |              | map<string, object> | 设置源服务信息，用于服务路由计算。可选               |
 |              | ├                        | `namespace`  | string              | 实例的标签信息                                       |
 |              | ├                        | `service`    | string              | 实例的标签信息                                       |
 |              | ⎿                        | `metadata`   | map<string, string> | 实例的标签信息                                       |
@@ -416,7 +416,7 @@ var_dump($res);
 | ├            | `load_balance_type`      |              | string              | 设置负载均衡类型。可选，默认使用配置文件中设置的类型            |
 | ├            | `metadata_failover_type` |              | string              | 设置元数据路由匹配失败时的降级策略，默认不降级                  |
 | ├            | `labels`                 |              | map<string, string> | 设置请求标签，用于接口级别熔断                                  |
-| ⎿            | `source`                 |              | map<string, object> | 设置源服务信息，用于服务路由计算。可选                          |
+| ⎿            | `source_service`         |              | map<string, object> | 设置源服务信息，用于服务路由计算。可选                          |
 |              | ├                        | `namespace`  | string              | 实例的标签信息                                                  |
 |              | ├                        | `service`    | string              | 实例的标签信息                                                  |
 |              | ⎿                        | `metadata`   | map<string, string> | 实例的标签信息                                                  |
@@ -564,7 +564,7 @@ array(
 | ├          | `load_balance_type`      |             | string              | 设置负载均衡类型。可选，默认使用配置文件中设置的类型                    |
 | ├          | `metadata_failover_type` |             | string              | 设置元数据路由匹配失败时的降级策略，默认不降级                          |
 | ├          | `labels`                 |             | map<string, string> | 设置请求标签，用于接口级别熔断                                          |
-| ⎿          | `source`                 |             | map<string, string> | 设置源服务信息，用于服务路由计算。可选                                  |
+| ⎿          | `source_service`         |             | map<string, string> | 设置源服务信息，用于服务路由计算。可选                                  |
 |            | ├                        | `namespace` | string              | 实例的标签信息                                                          |
 |            | ├                        | `service`   | string              | 实例的标签信息                                                          |
 |            | ⎿                        | `metadata`  | map<string, string> | 实例的标签信息                                                          |
@@ -672,7 +672,7 @@ var_dump($res);
 | ├          | `load_balance_type`      |             | string              | 设置负载均衡类型。可选，默认使用配置文件中设置的类型                    |
 | ├          | `metadata_failover_type` |             | string              | 设置元数据路由匹配失败时的降级策略，默认不降级                          |
 | ├          | `labels`                 |             | map<string, string> | 设置请求标签，用于接口级别熔断                                          |
-| ⎿          | `source`                 |             | map<string, string> | 设置源服务信息，用于服务路由计算。可选                                  |
+| ⎿          | `source_service`         |             | map<string, string> | 设置源服务信息，用于服务路由计算。可选                                  |
 |            | ├                        | `namespace` | string              | 实例的标签信息                                                          |
 |            | ├                        | `service`   | string              | 实例的标签信息                                                          |
 |            | ⎿                        | `metadata`  | map<string, string> | 实例的标签信息                                                          |
@@ -776,7 +776,7 @@ var_dump($res);
 | ├            | `ret_code`            |              | string              | 设置调用返回码。可选，用于支持根据返回码实现自己的插件                                          |
 | ├            | `subset`              |              | map<string, string> | 设置被调服务subset信息                                                                          |
 | ├            | `labels`              |              | map<string, string> | 设置被调服务labels信息                                                                          |
-| ⎿            | `source`              |              | map<string, string> | 设置源服务信息                                                                                  |
+| ⎿            | `source_service`      |              | map<string, string> | 设置源服务信息                                                                                  |
 |              | ├                     | `namespace`  | string              | 实例的标签信息                                                                                  |
 |              | ├                     | `service`    | string              | 实例的标签信息                                                                                  |
 |              | ⎿                     | `metadata`   | map<string, string> | 实例的标签信息                                                                                  |

@@ -1,0 +1,54 @@
+name: Release_5_6_40
+
+on:
+  workflow_dispatch:
+    inputs:
+      polaris_cpp_version:
+        description: "tag version for polaris-cpp"
+        required: true
+  push:
+    branches: [develop]
+  pull_request:
+    branches: [develop]
+
+jobs:
+  laravel-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: shivammathur/setup-php@15c43e89cdef867065b0213be354c2841860869e
+        with:
+          php-version: "5.6.40"
+      - uses: actions/checkout@v2
+      - name: Echo PHP Version
+        run: php -version
+      - name: Get Polaris-CPP
+        env:
+          POLARIS_CPP_VERSION: ${{ github.event.inputs.polaris_cpp_version }}
+        run: |
+          set -e
+          cur_pwd=$(pwd)
+          cd ../
+          git clone https://github.com/polarismesh/polaris-cpp.git
+          cd polaris-cpp
+          git checkout ${POLARIS_CPP_VERSION}
+
+          # 构建 polaris-cpp 以及生成 polaris-cpp 对应的静态连接文件
+          make && make package
+
+          # 解压对应的文件
+          tar -zxvf polaris_cpp_sdk.tar.gz
+
+          # 拷贝 slib 目录下的文件到 polaris-php 中
+          cd ${cur_pwd}/
+          mkdir -p lib/
+          mv ../polaris-cpp/slib/* ./lib
+      - name: Build Polaris-PHP For 5.6.40
+        run: |
+          phpize --clean
+
+          phpize
+
+          ./configure --with-polaris
+
+          make && make install

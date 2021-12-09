@@ -4,7 +4,7 @@
 
 ## 如何构建
 
-- 构建对应的 polaris-php 插件, [构建文档](../../doc/HowToBuild.md)
+- 构建对应的 polaris-php 插件, [构建文档](../../doc/HowToBuild_ZH.md)
 
 ## 如何使用
 
@@ -18,7 +18,8 @@
   - 创建服务消费者
     - ![create_provider_service](./image/create-php-consumer.png)
 - 配置服务提供者的路由规则
-  - ![setting_ratelimit](./image/create-php-provider-route-rule.png)
+  - 设置服务的被调规则
+    - ![setting_ratelimit](./image/create-php-provider-route-rule.png)
 
 
 ### 执行程序
@@ -29,36 +30,35 @@ php route.php
 
 观察输出结果
 
-- 第一次输出期望值
+- 输出期望值
 
 ```
-array(3) {
-  ["code"]=> int(0)
-  ["err_msg"]=> string(9) "0-success"
-  ["quota_result"]=> array(6) {
-    ["quota_result_code"]=> int(0)  // 配额正常
-    ["quota_duration"]=> int(1000)
-    ["quota_left"]=> int(0)
-    ["quota_all"]=> int(1)
-    ["degrade"]=> bool(false)
-    ["wait_time"]=> int(0)
-  }
-}
-```
-
-- 第二次输出期望值
-
-```
-array(3) {
-  ["code"]=> int(0)
-  ["err_msg"]=> string(9) "0-success"
-  ["quota_result"]=> array(6) {
-    ["quota_result_code"]=> int(1) // 配额被限流
-    ["quota_duration"]=> int(1000)
-    ["quota_left"]=> int(0)
-    ["quota_all"]=> int(1)
-    ["degrade"]=> bool(false)
-    ["wait_time"]=> int(0)
+array(1) {
+  [0]=>
+  array(19) {
+    ["host"]=> string(9) "127.0.0.4"
+    ["container_name"]=> string(0) ""
+    ["internal_set_name"]=> string(0) ""
+    ["logic_set"]=> string(0) ""
+    ["region"]=> string(0) ""
+    ["zone"]=> string(0) ""
+    ["campus"]=> string(0) ""
+    ["vpc_id"]=> string(0) ""
+    ["protocol"]=> string(0) ""
+    ["version"]=> string(0) ""
+    ["port"]=> int(8080)
+    ["weight"]=> int(100)
+    ["priority"]=> int(0)
+    ["dynamic_weight"]=> int(100)
+    ["hash_key"]=> int(2926897704236617270)
+    ["locality_aware_info"]=> int(0)
+    ["healthy"]=> ool(true)
+    ["isolate"]=> bool(false)
+    ["metadata"]=> array(3) {
+      ["env"]=> string(3) "pre"
+      ["protocol"]=> string(0) ""
+      ["version"]=> string(0) ""
+    }
   }
 }
 ```

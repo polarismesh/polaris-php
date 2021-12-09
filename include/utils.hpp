@@ -18,6 +18,7 @@ extern "C"
 #include <sstream>
 #include <iostream>
 #include <map>
+#include "common.hpp"
 
 static void PolarisOutputDebugString(zend_bool trigger_break, const char *format, ...) /* {{{ */
 {
@@ -78,10 +79,11 @@ static zval *TransferMapToArray(map<string, string> metadata)
 
     for (map<string, string>::iterator iter = metadata.begin(); iter != metadata.end(); iter++)
     {
-        add_assoc_string(metadataArr, iter->first, iter->second);
+        char *valN = const_cast<char *>(iter->second.c_str());
+        add_assoc_string(metadataArr, iter->first.c_str(), valN, 1);
     }
 
-    return metadata;
+    return metadataArr;
 }
 
 static map<string, string> TransferToStdMap(HashTable *ht)
@@ -107,6 +109,11 @@ static map<string, string> TransferToStdMap(HashTable *ht)
     }
 
     return metadata;
+}
+
+static uint getKeyLength(string val)
+{
+    return val.length() + 1;
 }
 
 #endif
