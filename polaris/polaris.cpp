@@ -65,7 +65,7 @@ PHP_FUNCTION(confirm_polaris_compiled)
 	}
 
 	len = spprintf(&strg, 0, "Congratulations! You have successfully modified ext/%.78s/config.m4. Module %.78s is now compiled into PHP.", "polaris", arg);
-	RETURN_STRINGL(strg, len, 0);
+	RETURN_STRINGL(strg, len);
 }
 /* }}} */
 /* The previous line is meant for vim and emacs, so it can correctly fold and 

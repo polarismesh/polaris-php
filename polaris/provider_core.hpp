@@ -36,13 +36,14 @@ extern "C"
  */
 static polaris::ReturnCode RegisterInstance(polaris::ProviderApi *provider, zval *reqVal, uint64_t timeout, uint64_t flowId, zval *returnVal)
 {
-    zval **metadataVal;
     map<string, string> params = TransferToStdMap(Z_ARRVAL_P(reqVal));
     map<string, string> metadata = map<string, string>();
 
-    if (zend_hash_find(HASH_OF(reqVal), Metadata.c_str(), getKeyLength(Metadata), (void **)(&metadataVal)) == SUCCESS)
+    zval *metadataVal;
+    metadataVal = zend_hash_find(HASH_OF(reqVal), zend_string_init(Metadata.c_str(), getKeyLength(Metadata), 0));
+    if (metadataVal != NULL)
     {
-        metadata = TransferToStdMap(Z_ARRVAL_PP(metadataVal));
+        metadata = TransferToStdMap(Z_ARRVAL_P(metadataVal));
     }
 
     int port = atoi(params[Port].c_str());
@@ -77,9 +78,8 @@ static polaris::ReturnCode RegisterInstance(polaris::ProviderApi *provider, zval
     polaris::ReturnCode code = provider->Register(req, instanceId);
     string errMsg = polaris::ReturnCodeToMsg(code);
     add_assoc_long(returnVal, Code.c_str(), code);
-    add_assoc_stringl(returnVal, ErrMsg.c_str(), (char *)errMsg.c_str(), errMsg.length(), 1);
-    add_assoc_stringl(returnVal, InstanceID.c_str(), (char *)instanceId.c_str(), instanceId.length(), 1);
-
+    add_assoc_stringl(returnVal, ErrMsg.c_str(), (char *)errMsg.c_str(), errMsg.length());
+    add_assoc_stringl(returnVal, InstanceID.c_str(), (char *)instanceId.c_str(), instanceId.length());
     return code;
 }
 
@@ -111,7 +111,7 @@ static polaris::ReturnCode DeregisterInstance(polaris::ProviderApi *provider, zv
     // 返回值回插入到 register_req 中？
     string errMsg = polaris::ReturnCodeToMsg(code);
     add_assoc_long(returnVal, Code.c_str(), code);
-    add_assoc_stringl(returnVal, ErrMsg.c_str(), (char *)errMsg.c_str(), errMsg.length(), 1);
+    add_assoc_stringl(returnVal, ErrMsg.c_str(), (char *)errMsg.c_str(), errMsg.length());
     return code;
 }
 
@@ -138,6 +138,6 @@ static polaris::ReturnCode DoHeartbeat(polaris::ProviderApi *provider, zval *req
     // 返回值回插入到 register_req 中？
     string errMsg = polaris::ReturnCodeToMsg(code);
     add_assoc_long(returnVal, Code.c_str(), code);
-    add_assoc_stringl(returnVal, ErrMsg.c_str(), (char *)errMsg.c_str(), errMsg.length(), 1);
+    add_assoc_stringl(returnVal, ErrMsg.c_str(), (char *)errMsg.c_str(), errMsg.length());
     return code;
 }

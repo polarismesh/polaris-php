@@ -3,6 +3,9 @@
 if(!extension_loaded('polaris')) {
 	dl('polaris.' . PHP_SHLIB_SUFFIX);
 }
+if(!extension_loaded('pcntl')) {
+	dl('pcntl.' . PHP_SHLIB_SUFFIX);
+}
 
 set_time_limit(0);
 
@@ -56,7 +59,7 @@ if ( $pid == 0 ) {
     	"log_dir" => "./"
     ));
 
-    $polaris -> InitProvider();
+    $polaris->InitProvider();
 
     // 实例注册信息
     $register_instance_info = array(

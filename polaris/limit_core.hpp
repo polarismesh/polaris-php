@@ -54,19 +54,20 @@ static polaris::LimitCallResultType convertToLimitCallResultType(string val)
 static polaris::QuotaRequest ConvertToQuotaRequest(zval *reqVal)
 {
     map<string, string> params = TransferToStdMap(Z_ARRVAL_P(reqVal));
-    zval **labelsVal, **subsetVal;
     map<string, string> labels = map<string, string>();
 
     polaris::QuotaRequest req;
 
-    if (zend_hash_find(HASH_OF(reqVal), Labels.c_str(), getKeyLength(Labels), (void **)&labelsVal) == SUCCESS)
+    zval *labelsVal, *subsetVal;
+    labelsVal = zend_hash_find(HASH_OF(reqVal), zend_string_init(Labels.c_str(), getKeyLength(Labels), 0));
+    if (labelsVal != NULL)
     {
-        labels = TransferToStdMap(Z_ARRVAL_PP(labelsVal));
+        labels = TransferToStdMap(Z_ARRVAL_P(labelsVal));
     }
-
-    if (zend_hash_find(HASH_OF(reqVal), ServiceSubSet.c_str(), getKeyLength(ServiceSubSet), (void **)(&subsetVal)) == SUCCESS)
+    subsetVal = zend_hash_find(HASH_OF(reqVal), zend_string_init(ServiceSubSet.c_str(), getKeyLength(ServiceSubSet), 0));
+    if (subsetVal != NULL)
     {
-        req.SetSubset(TransferToStdMap(Z_ARRVAL_PP(subsetVal)));
+        req.SetSubset(TransferToStdMap(Z_ARRVAL_P(subsetVal)));
     }
 
     string tmp = params[Amount];
@@ -175,12 +176,11 @@ static polaris::ReturnCode DoGetQuota(polaris::LimitApi *limit, zval *reqVal, zv
     polaris::ReturnCode code = limit->GetQuota(req, resp);
     string errMsg = polaris::ReturnCodeToMsg(code);
     add_assoc_long(returnVal, Code.c_str(), code);
-    add_assoc_stringl(returnVal, ErrMsg.c_str(), (char *)errMsg.c_str(), errMsg.length(), 1);
+    add_assoc_stringl(returnVal, ErrMsg.c_str(), (char *)errMsg.c_str(), errMsg.length());
 
     if (code == polaris::kReturnOk && resp != nullptr)
     {
         zval *arr;
-        ALLOC_INIT_ZVAL(arr);
         array_init(arr);
         add_assoc_long(arr, ResultCodeForQuota.c_str(), resp->GetResultCode());
         add_assoc_long(arr, DurationForQuota.c_str(), resp->GetQuotaResultInfo().duration_);
@@ -205,21 +205,22 @@ static polaris::ReturnCode DoGetQuota(polaris::LimitApi *limit, zval *reqVal, zv
 static polaris::ReturnCode DoUpdateCallResult(polaris::LimitApi *limit, zval *reqVal, zval *returnVal)
 {
     map<string, string> params = TransferToStdMap(Z_ARRVAL_P(reqVal));
-    zval **labelsVal, **subsetVal;
     map<string, string> labels, subset;
 
-    if (zend_hash_find(HASH_OF(reqVal), Labels.c_str(), getKeyLength(Labels), (void **)&labelsVal) == SUCCESS && Z_TYPE_PP(labelsVal) == IS_ARRAY)
+    zval *labelsVal = zend_hash_find(HASH_OF(reqVal), zend_string_init(Labels.c_str(), getKeyLength(Labels), 0));
+    if (labelsVal != NULL && Z_TYPE_P(labelsVal) == IS_ARRAY)
     {
-        labels = TransferToStdMap(Z_ARRVAL_PP(labelsVal));
+        labels = TransferToStdMap(Z_ARRVAL_P(labelsVal));
     }
     else
     {
         labels = map<string, string>();
     }
 
-    if (zend_hash_find(HASH_OF(reqVal), ServiceSubSet.c_str(), getKeyLength(ServiceSubSet), (void **)(&subsetVal)) == SUCCESS)
+    zval *subsetVal = zend_hash_find(HASH_OF(reqVal), zend_string_init(ServiceSubSet.c_str(), getKeyLength(ServiceSubSet), 0));
+    if (subsetVal != NULL)
     {
-        subset = TransferToStdMap(Z_ARRVAL_PP(subsetVal));
+        subset = TransferToStdMap(Z_ARRVAL_P(subsetVal));
     }
     else
     {
@@ -238,8 +239,7 @@ static polaris::ReturnCode DoUpdateCallResult(polaris::LimitApi *limit, zval *re
     polaris::ReturnCode code = limit->UpdateCallResult(callResult);
     string errMsg = polaris::ReturnCodeToMsg(code);
     add_assoc_long(returnVal, Code.c_str(), code);
-    add_assoc_stringl(returnVal, ErrMsg.c_str(), (char *)errMsg.c_str(), errMsg.length(), 1);
-
+    add_assoc_stringl(returnVal, ErrMsg.c_str(), (char *)errMsg.c_str(), errMsg.length());
     return code;
 }
 
@@ -258,6 +258,6 @@ static polaris::ReturnCode DoInitQuotaWindow(polaris::LimitApi *limit, zval *req
     polaris::ReturnCode code = limit->InitQuotaWindow(req);
     string errMsg = polaris::ReturnCodeToMsg(code);
     add_assoc_long(returnVal, Code.c_str(), code);
-    add_assoc_stringl(returnVal, ErrMsg.c_str(), (char *)errMsg.c_str(), errMsg.length(), 1);
+    add_assoc_stringl(returnVal, ErrMsg.c_str(), (char *)errMsg.c_str(), errMsg.length());
     return code;
 }
