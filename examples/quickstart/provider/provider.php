@@ -9,6 +9,9 @@ if(!extension_loaded('pcntl')) {
 
 set_time_limit(0);
 
+$self_ip  = getHostByName(getHostName());
+var_dump($self_ip);
+
 class TCPServer
 {
     private $ip = '127.0.0.1';
