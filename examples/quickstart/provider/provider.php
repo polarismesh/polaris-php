@@ -70,7 +70,7 @@ if ( $pid == 0 ) {
     // 实例注册信息
     $register_instance_info = array(
     	"namespace" => "default",
-    	"service" => "polaris_php_test",
+    	"service" => "EchoServerPHP",
     	"host" => $self_ip,
     	"port" => "9996",
     	"heartbeat" => "true",
@@ -89,13 +89,12 @@ if ( $pid == 0 ) {
     if ( $res['code'] != '0') {
         $err_msg = $res["err_msg"];
         echo "register instance fail '$err_msg'";
-        exit(1);
     }
 
     // 实例心跳信息
     $heartbeat_info = array(
     	"namespace" => "default",
-    	"service" => "polaris_php_test",
+    	"service" => "EchoServerPHP",
     	"host" => $self_ip,
     	"port" => "9996",
     );

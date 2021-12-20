@@ -59,17 +59,16 @@ static polaris::CallRetStatus convertToCallRetStatus(string val)
 
 /**
  * @brief 将 polaris::Instance 转换为 php 的 array
- * 
- * @param inst 
- * @return zval* 
+ *
+ * @param inst
+ * @return zval*
  */
-static zval *convertInstanceToArray(polaris::Instance inst)
+static zval convertInstanceToArray(polaris::Instance inst)
 {
 
-    zval *retVal;
-    zval arr;
-    array_init(&arr);
-    retVal = &arr;
+    zval retVal;
+    ZVAL_NEW_ARR(&retVal);
+    array_init(&retVal);
 
     char *hostN = const_cast<char *>(inst.GetHost().c_str());
     char *containerNameN = const_cast<char *>(inst.GetContainerName().c_str());
@@ -82,27 +81,27 @@ static zval *convertInstanceToArray(polaris::Instance inst)
     char *protocolN = const_cast<char *>(inst.GetProtocol().c_str());
     char *versionN = const_cast<char *>(inst.GetVersion().c_str());
 
+    add_assoc_string(&retVal, Host.c_str(), hostN);
+    add_assoc_string(&retVal, ContainerName.c_str(), containerNameN);
+    add_assoc_string(&retVal, InternalSetName.c_str(), internalSetNameN);
+    add_assoc_string(&retVal, LogicSet.c_str(), logicSetN);
+    add_assoc_string(&retVal, Region.c_str(), regionN);
+    add_assoc_string(&retVal, Zone.c_str(), zoneN);
+    add_assoc_string(&retVal, Campus.c_str(), campusN);
+    add_assoc_string(&retVal, VpcID.c_str(), vpcIdN);
+    add_assoc_string(&retVal, Protocol.c_str(), protocolN);
+    add_assoc_string(&retVal, Version.c_str(), versionN);
 
-    add_assoc_string(retVal, Host.c_str(), hostN);
-    add_assoc_string(retVal, ContainerName.c_str(), containerNameN);
-    add_assoc_string(retVal, InternalSetName.c_str(), internalSetNameN);
-    add_assoc_string(retVal, LogicSet.c_str(), logicSetN);
-    add_assoc_string(retVal, Region.c_str(), regionN);
-    add_assoc_string(retVal, Zone.c_str(), zoneN);
-    add_assoc_string(retVal, Campus.c_str(), campusN);
-    add_assoc_string(retVal, VpcID.c_str(), vpcIdN);
-    add_assoc_string(retVal, Protocol.c_str(), protocolN);
-    add_assoc_string(retVal, Version.c_str(), versionN);
-
-    add_assoc_long(retVal, Port.c_str(), inst.GetPort());
-    add_assoc_long(retVal, Weight.c_str(), inst.GetWeight());
-    add_assoc_long(retVal, Priority.c_str(), inst.GetPriority());
-    add_assoc_long(retVal, DynamicWeight.c_str(), inst.GetDynamicWeight());
-    add_assoc_long(retVal, HashKey.c_str(), inst.GetHash());
-    add_assoc_long(retVal, LocalityAwareInfo.c_str(), inst.GetLocalityAwareInfo());
-    add_assoc_bool(retVal, Healthy.c_str(), inst.isHealthy());
-    add_assoc_bool(retVal, Isolate.c_str(), inst.isIsolate());
-    add_assoc_zval(retVal, Metadata.c_str(), TransferMapToArray(inst.GetMetadata()));
+    add_assoc_long(&retVal, Port.c_str(), inst.GetPort());
+    add_assoc_long(&retVal, Weight.c_str(), inst.GetWeight());
+    add_assoc_long(&retVal, Priority.c_str(), inst.GetPriority());
+    add_assoc_long(&retVal, DynamicWeight.c_str(), inst.GetDynamicWeight());
+    add_assoc_long(&retVal, HashKey.c_str(), inst.GetHash());
+    add_assoc_long(&retVal, LocalityAwareInfo.c_str(), inst.GetLocalityAwareInfo());
+    add_assoc_bool(&retVal, Healthy.c_str(), inst.isHealthy());
+    add_assoc_bool(&retVal, Isolate.c_str(), inst.isIsolate());
+    zval metaVal = TransferMapToArray(inst.GetMetadata());
+    add_assoc_zval(&retVal, Metadata.c_str(), &metaVal);
     return retVal;
 }
 
@@ -212,7 +211,6 @@ static polaris::GetInstancesRequest *convertoToGetInstancesRequest(zval *reqVal,
     req.SetSourceSetName(params[SourceSetName]);
     req.SetMetadataFailover(ConvertToMetadataFailoverType(params[MetadataFailoverTypeStr]));
 
-
     zval *labelsVal, *metadataVal, *srcmetaVal, *sourceServiceVal;
 
     // 获取被调用服务的元数据信息
@@ -244,34 +242,24 @@ static polaris::GetInstancesRequest *convertoToGetInstancesRequest(zval *reqVal,
     return &req;
 }
 
-static zval *convertServiceResponseToZval(polaris::InstancesResponse *resp)
+static zval convertServiceResponseToZval(polaris::InstancesResponse *resp)
 {
-    zval *arr;
-    zval tmpArr;
-    array_init(&tmpArr);
-    arr = &tmpArr;
+    zval arr;
+    array_init(&arr);
 
     // 设置服务的基本信息数据
-    add_assoc_long(arr, FlowId.c_str(), resp->GetFlowId());
+    add_assoc_long(&arr, FlowId.c_str(), resp->GetFlowId());
+    add_assoc_string(&arr, Service.c_str(), resp->GetServiceName().c_str());
+    add_assoc_string(&arr, Namespace.c_str(), resp->GetServiceNamespace().c_str());
+    add_assoc_string(&arr, Revision.c_str(), resp->GetRevision().c_str());
+    add_assoc_string(&arr, WeightTypeStr.c_str(), ConvertWeigthTypeForString(resp->GetWeightType()).c_str());
+    zval metaVal = TransferMapToArray(resp->GetMetadata());
+    add_assoc_zval(&arr, Metadata.c_str(), &metaVal);
+    zval subsetVal = TransferMapToArray(resp->GetSubset());
+    add_assoc_zval(&arr, ServiceSubSet.c_str(), &subsetVal);
 
-    char *svrN = const_cast<char *>(resp->GetServiceName().c_str());
-    char *nsN = const_cast<char *>(resp->GetServiceNamespace().c_str());
-    char *revN = const_cast<char *>(resp->GetRevision().c_str());
-    char *weightTypeN = const_cast<char *>(ConvertWeigthTypeForString(resp->GetWeightType()).c_str());
-
-
-    add_assoc_string(arr, Service.c_str(), svrN);
-    add_assoc_string(arr, Namespace.c_str(), nsN);
-    add_assoc_string(arr, Revision.c_str(), revN);
-    add_assoc_string(arr, WeightTypeStr.c_str(), weightTypeN);
-    add_assoc_zval(arr, Metadata.c_str(), TransferMapToArray(resp->GetMetadata()));
-    add_assoc_zval(arr, ServiceSubSet.c_str(), TransferMapToArray(resp->GetSubset()));
-
-    zval *instancesVal;
-// 设置服务实例的基本信息数据
-    zval tmpVal;
-    array_init(&tmpVal);
-    instancesVal = &tmpVal;
+    zval instancesVal;
+    array_init(&instancesVal);
 
     vector<polaris::Instance> instances = resp->GetInstances();
 
@@ -279,23 +267,23 @@ static zval *convertServiceResponseToZval(polaris::InstancesResponse *resp)
     for (int i = 0; i < instances.size(); i++)
     {
         polaris::Instance inst = instances[i];
-        zval *val = convertInstanceToArray(inst);
-        add_next_index_zval(instancesVal, val);
+        zval val = convertInstanceToArray(inst);
+        add_next_index_zval(&instancesVal, &val);
     }
 
-    add_assoc_zval(arr, Instances.c_str(), instancesVal);
+    add_assoc_zval(&arr, Instances.c_str(), &instancesVal);
 
     return arr;
 }
 
 /**
  * @brief 用于提前初始化服务数据
- * 
- * @param consumer 
- * @param reqVal 
- * @param timeout 
- * @param flowId 
- * @return polaris::ReturnCode 
+ *
+ * @param consumer
+ * @param reqVal
+ * @param timeout
+ * @param flowId
+ * @return polaris::ReturnCode
  */
 static polaris::ReturnCode DoInitService(polaris::ConsumerApi *consumer, zval *reqVal, uint64_t timeout, uint64_t flowId, zval *returnVal)
 {
@@ -366,12 +354,12 @@ static polaris::ReturnCode DoInitService(polaris::ConsumerApi *consumer, zval *r
 
 /**
  * @brief 同步获取单个服务实例
- * 
- * @param consumer 
- * @param reqVal 
- * @param timeout 
- * @param flowId 
- * @return polaris::ReturnCode 
+ *
+ * @param consumer
+ * @param reqVal
+ * @param timeout
+ * @param flowId
+ * @return polaris::ReturnCode
  */
 static polaris::ReturnCode DoGetOneInstance(polaris::ConsumerApi *consumer, zval *reqVal, uint64_t timeout, uint64_t flowId, zval *returnVal)
 {
@@ -437,8 +425,8 @@ static polaris::ReturnCode DoGetOneInstance(polaris::ConsumerApi *consumer, zval
 
     if (code == polaris::kReturnOk)
     {
-        zval *arr = convertServiceResponseToZval(resp);
-        add_assoc_zval(returnVal, GetResponse.c_str(), arr);
+        zval arr = convertServiceResponseToZval(resp);
+        add_assoc_zval(returnVal, GetResponse.c_str(), &arr);
     }
     string errMsg = polaris::ReturnCodeToMsg(code);
     add_assoc_long(returnVal, Code.c_str(), code);
@@ -449,12 +437,12 @@ static polaris::ReturnCode DoGetOneInstance(polaris::ConsumerApi *consumer, zval
 /**
  * @brief 同步获取批量服务实例
  * @note 该接口不会返回熔断半开实例，实例熔断后，进入半开如何没有请求一段时间后会自动恢复
- * 
- * @param consumer 
- * @param reqVal 
- * @param timeout 
- * @param flowId 
- * @return polaris::ReturnCode 
+ *
+ * @param consumer
+ * @param reqVal
+ * @param timeout
+ * @param flowId
+ * @return polaris::ReturnCode
  */
 static polaris::ReturnCode DoGetInstances(polaris::ConsumerApi *consumer, zval *reqVal, uint64_t timeout, uint64_t flowId, zval *returnVal)
 {
@@ -511,8 +499,8 @@ static polaris::ReturnCode DoGetInstances(polaris::ConsumerApi *consumer, zval *
 
     if (code == polaris::kReturnOk)
     {
-        zval *arr = convertServiceResponseToZval(resp);
-        add_assoc_zval(returnVal, GetResponse.c_str(), arr);
+        zval arr = convertServiceResponseToZval(resp);
+        add_assoc_zval(returnVal, GetResponse.c_str(), &arr);
     }
     string errMsg = polaris::ReturnCodeToMsg(code);
     add_assoc_long(returnVal, Code.c_str(), code);
@@ -522,12 +510,12 @@ static polaris::ReturnCode DoGetInstances(polaris::ConsumerApi *consumer, zval *
 
 /**
  * @brief 同步获取服务下全部服务实例，返回的实例与控制台看到的一致
- * 
- * @param consumer 
- * @param reqVal 
- * @param timeout 
- * @param flowId 
- * @return polaris::ReturnCode 
+ *
+ * @param consumer
+ * @param reqVal
+ * @param timeout
+ * @param flowId
+ * @return polaris::ReturnCode
  */
 static polaris::ReturnCode DoGetAllInstances(polaris::ConsumerApi *consumer, zval *reqVal, uint64_t timeout, uint64_t flowId, zval *returnVal)
 {
@@ -581,8 +569,8 @@ static polaris::ReturnCode DoGetAllInstances(polaris::ConsumerApi *consumer, zva
     polaris::ReturnCode code = consumer->GetAllInstances(req, resp);
     if (code == polaris::kReturnOk)
     {
-        zval *arr = convertServiceResponseToZval(resp);
-        add_assoc_zval(returnVal, GetResponse.c_str(), arr);
+        zval arr = convertServiceResponseToZval(resp);
+        add_assoc_zval(returnVal, GetResponse.c_str(), &arr);
     }
     string errMsg = polaris::ReturnCodeToMsg(code);
     add_assoc_long(returnVal, Code.c_str(), code);
@@ -593,10 +581,10 @@ static polaris::ReturnCode DoGetAllInstances(polaris::ConsumerApi *consumer, zva
 /**
  * @brief 上报服务调用结果，用于服务实例熔断和监控统计
  * @note 本调用没有网络操作，只是将数据写入内存
- * 
- * @param consumer 
- * @param val 
- * @return polaris::ReturnCode 
+ *
+ * @param consumer
+ * @param val
+ * @return polaris::ReturnCode
  */
 static polaris::ReturnCode DoUpdateServiceCallResult(polaris::ConsumerApi *consumer, zval *reqVal, uint64_t timeout, uint64_t flowId, zval *returnVal)
 {

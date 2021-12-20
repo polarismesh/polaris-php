@@ -1,40 +1,42 @@
 # QuickStart
 
-根据简单的 php socket 应用示例，演示 php 应用如何快速接入北极星。
+Know a simple php socket application example, demonstrating how php application can quickly connect to Polaris. [中文文档](./README_ZH.md)
 
-## 目录介绍
+## Catalog Introduction
 
 > consumer
 
-php-client 端示例，负责发起 socket 请求。启动时先从北极星拉取一个对应 php-server 的服务地址并发起调用
+An example of php-client, responsible for initiating socket requests. At startup, first pull a service address corresponding to php-server from Polaris and initiate a call
 
 > provider
 
-php-server 端示例，负责处理 socket 请求。启动时进程1负责处理socket请求，进程2则进行服务实例的注册，并发送心跳维持
-实例的健康状态
 
-## 如何构建
+php-server example, responsible for processing socket requests. At startup, process 1 is responsible for processing
+socket requests, and process 2 registers the service instance and sends a heartbeat to maintain the health status of the
+instance
 
-- 构建对应的 polaris-php 插件, [构建文档](../../doc/HowToBuild.md)
+## How to build
 
-## 如何使用
+- Build the corresponding polaris-php plugin. [Build documentation](../../doc/HowToBuild.md)
 
-### 创建服务
+## How to use
 
-预先通过北极星控制台创建对应的服务，如果是通过本地一键安装包的方式安装，直接在浏览器通过127.0.0.1:8091打开控制台。
+### Create Service
+
+Create the corresponding service through the Polaris console in advance. If it is installed through a local one-click installation package, open the console directly in the browser through 127.0.0.1:8091.
 
 ![create_service](./image/create_php_service.png)
 
-### 执行程序
+### Execute program
 
-运行 php-server
+run php-server
 
 ```shell
 cd provider
 php provider.php
 ```
 
-运行 php-client
+run php-client
 
 ```shell
 cd consumer

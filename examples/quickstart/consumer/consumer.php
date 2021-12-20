@@ -1,4 +1,4 @@
-<?php
+/usr/local/php74/bin/php<?php
 $br = (php_sapi_name() == "cli")? "":"<br>";
 
 if(!extension_loaded('polaris')) {
@@ -15,7 +15,7 @@ $polaris -> InitConsumer();
 
 $get_req = array(
 	"namespace" => "default",
-	"service" => "polaris_php_test",
+	"service" => "EchoServerPHP",
 );
 
 $res = $polaris->GetOneInstance($get_req, 5000, 1);

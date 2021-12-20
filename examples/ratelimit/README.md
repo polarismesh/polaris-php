@@ -1,37 +1,37 @@
 # RateLimit Example
 
-根据简单的 polaris-php 使用示例，演示 php 应用如何快速使用北极星的服务限流功能。
+Based on a simple polaris-php usage example, demonstrate how a php application can quickly use Polaris' service RateLimit.
 
-## 如何构建
+## How to build
 
-- 构建对应的 polaris-php 插件, [构建文档](../../doc/HowToBuild.md)
+- Build the corresponding polaris-php plugin [Build documentation](../../doc/HowToBuild.md)
 
-## 如何使用
+## How to Use
 
-### 创建服务
+### Create Service
 
-- 预先通过北极星控制台创建对应的服务，如果是通过本地一键安装包的方式安装，直接在浏览器通过127.0.0.1:8091打开控制台。
+- Create the corresponding service through the Polaris console in advance. If it is installed through a local one-click installation package, open the console directly in the browser through 127.0.0.1:8091.
   - ![create_service](./image/create_php_service.png)
-- 配置该服务的限流参数
+- Configure the current limiting parameters of the service
   - ![setting_ratelimit](./image/setting_ratelimit_rule.png)
 
 
-### 执行程序
+### Execute program
 
 ```shell
 php ratelimit.php
 ```
 
-观察输出结果
+Observe the output
 
-- 第一次输出期望值
+- Output expected value for the first time
 
 ```
 array(3) {
   ["code"]=> int(0)
   ["err_msg"]=> string(9) "0-success"
   ["quota_result"]=> array(6) {
-    ["quota_result_code"]=> int(0)  // 配额正常
+    ["quota_result_code"]=> int(0)  // Quota is normal
     ["quota_duration"]=> int(1000)
     ["quota_left"]=> int(0)
     ["quota_all"]=> int(1)
@@ -41,14 +41,14 @@ array(3) {
 }
 ```
 
-- 第二次输出期望值
+- Output expected value for the second time
 
 ```
 array(3) {
   ["code"]=> int(0)
   ["err_msg"]=> string(9) "0-success"
   ["quota_result"]=> array(6) {
-    ["quota_result_code"]=> int(1) // 配额被限流
+    ["quota_result_code"]=> int(1) // Quota is restricted
     ["quota_duration"]=> int(1000)
     ["quota_left"]=> int(0)
     ["quota_all"]=> int(1)
