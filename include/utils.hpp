@@ -66,22 +66,31 @@ static void PolarisHashDisplay(const HashTable *ht)
 }
 
 /**
- * @brief 
- * 
- * @param metadata 
- * @return map<string, string> 
+ * @brief
+ *
+ * @param metadata
+ * @return map<string, string>
  */
-static zval *TransferMapToArray(map<string, string> metadata)
+static zval TransferMapToArray(map<string, string> metadata)
 {
-    zval *metadataArr;
-    zval tmpArr;
-    array_init(&tmpArr);
-    metadataArr = &tmpArr;
+    zval metadataArr;
+    array_init(&metadataArr);
+
+    if (metadata.size() == 0)
+    {
+        return metadataArr;
+    }
 
     for (map<string, string>::iterator iter = metadata.begin(); iter != metadata.end(); iter++)
     {
-        char *valN = const_cast<char *>(iter->second.c_str());
-        add_assoc_string(metadataArr, iter->first.c_str(), valN);
+        // 这里直接忽略 key 为空的数据
+        if (iter->first == "")
+        {
+            continue;
+        }
+
+        // char *valN = const_cast<char *>(iter->second.c_str());
+        add_assoc_string(&metadataArr, iter->first.c_str(), iter->second.c_str());
     }
 
     return metadataArr;

@@ -312,30 +312,30 @@ var_dump($res);
 
 *请求参数*
 
-| 一级参数名称 | 二级参数名称             | 三级参数名称 | 参数类型            | 参数用途                                                |
-| :----------- | :----------------------- | :----------- | :------------------ | :------------------------------------------------------ |
-| `timeout`    |                          |              | long                | 超时时间，单位毫秒                                      |
-| `flowId`     |                          |              | long                | 本次请求的标识ID                                        |
-| `instance`   |                          |              | map<string, object> |                                                         |
-|              | `namespace`              |              | string              | 被调服务所在的命名空间                                  |
-|              | `service`                |              | string              | 被调服务名称                                            |
-|              | `version`                |              | string              | 实例版本                                                |
-|              | `vpc_id`                 |              | string              | 实例所在的VPC_ID信息                                    |
-|              | `metadata`               |              | map<string, string> | 设置元数据，用于元数据路由                              |
-|              | `canary`                 |              | string              | 设置调用哪个金丝雀服务实例                              |
-|              | `source_set_name`        |              | string              | 设置调用哪个set下的服务                                 |
-|              | `ignore_half_open`       |              | string              | 设置是否略过跳过半开探测节点, eg: "true" or "false"     |
-|              | `hash_string`            |              | string              | 设置 hash 字符串，用于一致性哈希负载均衡算法，eg: "100" |
-|              | `hash_key`               |              | string              | 设置hash key，用于一致性哈希负载均衡算法，eg: "100"     |
-|              | `replicate_index`        |              | string              | 用于一致性hash算法时获取副本实例，eg: "100"             |
-|              | `backup_instance_num`    |              | string              | 设置用于重试的实例数。可选，默认不返回用于重试的实例    |
-|              | `load_balance_type`      |              | string              | 设置负载均衡类型。可选，默认使用配置文件中设置的类型    |
-|              | `metadata_failover_type` |              | string              | 设置元数据路由匹配失败时的降级策略，默认不降级          |
-|              | `labels`                 |              | map<string, string> | 设置请求标签，用于接口级别熔断                          |
-|              | `source_service`         |              | map<string, object> | 设置源服务信息，用于服务路由计算。可选                  |
-|              |                          | `namespace`  | string              | 源服务命名空间                                          |
-|              |                          | `service`    | string              | 源服务名                                                |
-|              |                          | `metadata`   | map<string, string> | 源服务实例的标签信息                                    |
+| 一级参数名称 | 二级参数名称             | 三级参数名称 | 参数类型            | 参数用途                                                       |
+| :----------- | :----------------------- | :----------- | :------------------ | :------------------------------------------------------------- |
+| `timeout`    |                          |              | long                | 超时时间，单位毫秒                                             |
+| `flowId`     |                          |              | long                | 本次请求的标识ID                                               |
+| `instance`   |                          |              | map<string, object> |                                                                |
+|              | `namespace`              |              | string              | 被调服务所在的命名空间                                         |
+|              | `service`                |              | string              | 被调服务名称                                                   |
+|              | `version`                |              | string              | 实例版本                                                       |
+|              | `vpc_id`                 |              | string              | 实例所在的VPC_ID信息                                           |
+|              | `metadata`               |              | map<string, string> | 设置元数据，用于元数据路由                                     |
+|              | `canary`                 |              | string              | 设置调用哪个金丝雀服务实例                                     |
+|              | `source_set_name`        |              | string              | 设置调用哪个set下的服务                                        |
+|              | `ignore_half_open`       |              | string              | 设置是否略过跳过半开探测节点，eg:"true"                        |
+|              | `hash_string`            |              | string              | 设置 hash 字符串，用于一致性哈希负载均衡算法                   |
+|              | `hash_key`               |              | string              | 设置hash key，用于一致性哈希负载均衡算法，eg:"123"             |
+|              | `replicate_index`        |              | string              | 用于一致性hash算法时获取副本实例，eg:"123"                     |
+|              | `backup_instance_num`    |              | string              | 设置用于重试的实例数。可选，默认不返回用于重试的实例，eg:"123" |
+|              | `load_balance_type`      |              | string              | 设置负载均衡类型。可选，默认使用配置文件中设置的类型           |
+|              | `metadata_failover_type` |              | string              | 设置元数据路由匹配失败时的降级策略，默认不降级                 |
+|              | `labels`                 |              | map<string, string> | 设置请求标签，用于接口级别熔断                                 |
+|              | `source`                 |              | map<string, object> | 设置源服务信息，用于服务路由计算。可选                         |
+|              |                          | `namespace`  | string              | 实例的标签信息                                                 |
+|              |                          | `service`    | string              | 实例的标签信息                                                 |
+|              |                          | `metadata`   | map<string, string> | 实例的标签信息                                                 |
 
 *函数执行返回*
 
@@ -356,10 +356,13 @@ $init_service_info = array(
     "namespace" => "default",
     "service" => "php_ext_test",
     "vpc_id" => "test_vpc",
+    "metadata" => array(
+        "env" => "pre"
+    ),
     "labels" => array(
         "user_id" => "uin_001"
     ),
-    "source_service" => array(
+    "source" => array(
         "namespace" => "",
         "service" => "",
         "metadata" => array(
@@ -405,10 +408,10 @@ var_dump($res);
 |              | `load_balance_type`      |              | string              | 设置负载均衡类型。可选，默认使用配置文件中设置的类型    |
 |              | `metadata_failover_type` |              | string              | 设置元数据路由匹配失败时的降级策略，默认不降级          |
 |              | `labels`                 |              | map<string, string> | 设置请求标签，用于接口级别熔断                          |
-|              | `source_service`         |              | map<string, object> | 设置源服务信息，用于服务路由计算。可选                  |
-|              |                          | `namespace`  | string              | 源服务命名空间                                          |
-|              |                          | `service`    | string              | 源服务名                                                |
-|              |                          | `metadata`   | map<string, string> | 源服务实例的标签信息                                    |
+|              | `source`                 |              | map<string, object> | 设置源服务信息，用于服务路由计算。可选                  |
+|              |                          | `namespace`  | string              | 实例的标签信息                                          |
+|              |                          | `service`    | string              | 实例的标签信息                                          |
+|              |                          | `metadata`   | map<string, string> | 实例的标签信息                                          |
 
 *函数执行返回*
 
@@ -458,7 +461,13 @@ $init_service_info = array(
     "namespace" => "default",
     "service" => "php_ext_test",
     "vpc_id" => "test_vpc",
-    "source_service" => array(
+    "metadata" => array(
+        "env" => "pre"
+    ),
+    "labels" => array(
+        "user_id" => "uin_001"
+    ),
+    "source" => array(
         "namespace" => "",
         "service" => "",
         "metadata" => array(
@@ -497,10 +506,10 @@ var_dump($res);
 |            | `canary`                            |             | string              | 设置调用哪个金丝雀服务实例                                                   |
 |            | `source_set_name`                   |             | string              | 设置调用哪个set下的服务                                                      |
 |            | `metadata_failover_type`            |             | string              | 设置元数据路由匹配失败时的降级策略，默认不降级                               |
-|            | `source_service`                    |             | map<string, string> | 设置源服务信息，用于服务路由计算。可选                                       |
-|            |                                     | `namespace` | string              | 源服务命名空间                                                               |
-|            |                                     | `service`   | string              | 源服务名                                                                     |
-|            |                                     | `metadata`  | map<string, string> | 源服务实例的标签信息                                                         |
+|            | `source`                            |             | map<string, string> | 设置源服务信息，用于服务路由计算。可选                                       |
+|            |                                     | `namespace` | string              | 实例的标签信息                                                               |
+|            |                                     | `service`   | string              | 实例的标签信息                                                               |
+|            |                                     | `metadata`  | map<string, string> | 实例的标签信息                                                               |
 
 *函数执行返回*
 
@@ -550,7 +559,7 @@ $init_service_info = array(
    "namespace" => "default",
     "service" => "php_ext_test",
     "canary" => "test_vpc",
-    "source_service" => array(
+    "source" => array(
         "namespace" => "",
         "service" => "",
         "metadata" => array(
@@ -589,10 +598,10 @@ var_dump($res);
 |            | `canary`                            |             | string              | 设置调用哪个金丝雀服务实例                                                   |
 |            | `source_set_name`                   |             | string              | 设置调用哪个set下的服务                                                      |
 |            | `metadata_failover_type`            |             | string              | 设置元数据路由匹配失败时的降级策略，默认不降级                               |
-|            | `source_service`                    |             | map<string, string> | 设置源服务信息，用于服务路由计算。可选                                       |
-|            |                                     | `namespace` | string              | 源服务命名空间                                                               |
-|            |                                     | `service`   | string              | 源服务名                                                                     |
-|            |                                     | `metadata`  | map<string, string> | 源服务实例的标签信息                                                         |
+|            | `source`                            |             | map<string, string> | 设置源服务信息，用于服务路由计算。可选                                       |
+|            |                                     | `namespace` | string              | 实例的标签信息                                                               |
+|            |                                     | `service`   | string              | 实例的标签信息                                                               |
+|            |                                     | `metadata`  | map<string, string> | 实例的标签信息                                                               |
 
 *函数执行返回*
 
@@ -642,7 +651,7 @@ $init_service_info = array(
     "namespace" => "default",
     "service" => "php_ext_test",
     "canary" => "test_vpc",
-    "source_service" => array(
+    "source" => array(
         "namespace" => "",
         "service" => "",
         "metadata" => array(
@@ -680,15 +689,11 @@ var_dump($res);
 |              | `port`                |              | string              | 服务实例Port(可选，如果设置了服务实例ID，则这个可不设置，优先使用服务实例ID)，字符串数字："200" |
 |              | `delay`               |              | string              | 设置服务实例调用时延，字符串数字："200"                                                         |
 |              | `locality_aware_info` |              | string              | 设置需要传递的LocalityAware的信息，字符串数字："200"                                            |
-|              | `ignore_half_open`    |              | string              | 设置是否略过跳过半开探测节点, "true" or "false"                                                 |
 |              | `ret_status`          |              | string              | 调用返回状态，error、timeout、ok                                                                |
 |              | `ret_code`            |              | string              | 设置调用返回码。可选，用于支持根据返回码实现自己的插件                                          |
 |              | `subset`              |              | map<string, string> | 设置被调服务subset信息                                                                          |
 |              | `labels`              |              | map<string, string> | 设置被调服务labels信息                                                                          |
-|              | `source_service`      |              | map<string, string> | 设置源服务信息                                                                                  |
-|              |                       | `namespace`  | string              | 源服务命名空间                                                                                  |
-|              |                       | `service`    | string              | 源服务名                                                                                        |
-|              |                       | `metadata`   | map<string, string> | 源服务实例的标签信息                                                                            |
+
 
 *函数执行返回*
 
@@ -708,19 +713,10 @@ $polaris_client->InitConsumer();
 $init_service_info = array(
     "namespace" => "default",
     "service" => "php_ext_test",
-    "vpc_id" => "test_vpc",
     "locality_aware_info" => "",
     "ret_status" => "ok",
-    "labels" => array(
-        "user_id" => "uin_001"
-    ),
-    "source_service" => array(
-        "namespace" => "",
-        "service" => "",
-        "metadata" => array(
-            "env" => "pre"
-        )
-    )
+    "host" => "127.0.0.1",
+    "port" => "8080",
 );
 
 $timeout = 500;

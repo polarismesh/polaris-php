@@ -9,9 +9,12 @@ if(!extension_loaded('pcntl')) {
 
 set_time_limit(0);
 
+
+$self_ip  = getenv('PHP_PROVIDER_IP');
+var_dump($self_ip);
+
 class TCPServer
 {
-    private $ip = '127.0.0.1';
     private $port = 9996;
 
     private $_socket = null;
@@ -26,7 +29,7 @@ class TCPServer
 
     public function run()
     {
-        $bind_ok = socket_bind($this->_socket, $this->ip, $this->port);
+        $bind_ok = socket_bind($this->_socket, '0.0.0.0', $this->port);
 
         if ($bind_ok === false) {
             echo "socket_bind() failed, reason: ".socket_strerror(socket_last_error())."\n";
@@ -53,6 +56,9 @@ class TCPServer
 
 $pid = pcntl_fork();
 if ( $pid == 0 ) {
+    $self_ip  = getenv('PHP_PROVIDER_IP');
+    var_dump($self_ip);
+
     // 创建一个 polaris-provider 实例
     $polaris = new PolarisClient(array(
     	"config_path" => "./polaris.yaml",
@@ -64,8 +70,8 @@ if ( $pid == 0 ) {
     // 实例注册信息
     $register_instance_info = array(
     	"namespace" => "default",
-    	"service" => "polaris_php_test",
-    	"host" => "127.0.0.1",
+    	"service" => "EchoServerPHP",
+    	"host" => $self_ip,
     	"port" => "9996",
     	"heartbeat" => "true",
     	"protocol" => "TCP",
@@ -80,12 +86,16 @@ if ( $pid == 0 ) {
     // 执行实例注册动作
     $res = $polaris->Register($register_instance_info, 5000, 1);
     var_dump($res);
+    if ( $res['code'] != '0') {
+        $err_msg = $res["err_msg"];
+        echo "register instance fail '$err_msg'";
+    }
 
     // 实例心跳信息
     $heartbeat_info = array(
     	"namespace" => "default",
-    	"service" => "polaris_php_test",
-    	"host" => "127.0.0.1",
+    	"service" => "EchoServerPHP",
+    	"host" => $self_ip,
     	"port" => "9996",
     );
     while (true) {

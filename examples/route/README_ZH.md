@@ -1,36 +1,36 @@
 # Route Example
 
-Based on a simple polaris-php usage example, demonstrate how a php application can quickly use the service routing function of Polaris.
+根据简单的 polaris-php 使用示例，演示 php 应用如何快速使用北极星的服务路由功能。
 
-## How To Build
+## 如何构建
 
-- Build the corresponding polaris-php plugin [Build documentation](../../doc/HowToBuild.md)
+- 构建对应的 polaris-php 插件, [构建文档](../../doc/HowToBuild_ZH.md)
 
-## How To Use
+## 如何使用
 
 ### 创建服务
 
-- Create the corresponding service through the Polaris console in advance. If it is installed through a local one-click installation package, open the console directly in the browser through 127.0.0.1:8080
-  - Create a service provider
+- 预先通过北极星控制台创建对应的服务，如果是通过本地一键安装包的方式安装，直接在浏览器通过127.0.0.1:8091打开控制台。
+  - 创建服务提供者
     - ![create_provider_service](./image/create-php-provider.png)
-  - Create service provider instance
+  - 创建服务提供这实例
     - ![create_provider_instance](./image/create-php-provider-instance.png)
-  - Create service consumers
+  - 创建服务消费者
     - ![create_provider_service](./image/create-php-consumer.png)
-- Configure routing rules for service providers
-  - Set up the service being called rules
+- 配置服务提供者的路由规则
+  - 设置服务的被调规则
     - ![setting_ratelimit](./image/create-php-provider-route-rule.png)
 
 
-### Execute program
+### 执行程序
 
 ```shell
 php route.php
 ```
 
-Observe the output
+观察输出结果
 
-- Output expected value
+- 输出期望值
 
 ```
 array(1) {

@@ -15,12 +15,15 @@ $polaris->InitConsumer();
 
 $client_req = array(
 	"namespace" => "default",
-	"service" => "polaris_php_test",
-	"labels" => array(
-		"env" => "pre",
-	),
+	"service" => "polaris-php-provider",
+	"source_service" => array(
+        "metadata" => array(
+            "env" => "prod",
+        ),
+    )
 );
 
-$res = $polaris->GetOneInstance($get_req, 5000, 1);
+$res = $polaris->GetOneInstance($client_req, 5000, 1);
 $instances = $res["response"]["instances"];
+var_dump($instances);
 ?>
