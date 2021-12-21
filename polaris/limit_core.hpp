@@ -1,3 +1,19 @@
+// Tencent is pleased to support the open source community by making polaris-go available.
+//
+// Copyright (C) 2019 THL A29 Limited, a Tencent company. All rights reserved.
+//
+// Licensed under the BSD 3-Clause License (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+// https://opensource.org/licenses/BSD-3-Clause
+//
+// Unless required by applicable law or agreed to in writing, software distributed
+// under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+// CONDITIONS OF ANY KIND, either express or implied. See the License for the
+// specific language governing permissionsr and limitations under the License.
+//
+
 using namespace std;
 
 extern "C"
@@ -27,10 +43,10 @@ extern "C"
 // Polaris-PHP 中的依赖
 
 /**
- * @brief 
- * 
- * @param val 
- * @return polaris::LimitCallResultType 
+ * @brief
+ *
+ * @param val
+ * @return polaris::LimitCallResultType
  */
 static polaris::LimitCallResultType convertToLimitCallResultType(string val)
 {
@@ -46,10 +62,10 @@ static polaris::LimitCallResultType convertToLimitCallResultType(string val)
 }
 
 /**
- * @brief 
- * 
- * @param reqVal 
- * @return polaris::QuotaRequest& 
+ * @brief
+ *
+ * @param reqVal
+ * @return polaris::QuotaRequest&
  */
 static polaris::QuotaRequest ConvertToQuotaRequest(zval *reqVal)
 {
@@ -147,10 +163,10 @@ static polaris::QuotaRequest ConvertToQuotaRequest(zval *reqVal)
 
 /**
  * @brief 获取配额
- * 
- * @param limit 
+ *
+ * @param limit
  * @param reqVal 获取配额请求
- * @return polaris::ReturnCode 
+ * @return polaris::ReturnCode
  * {
  *   ["quota_result"]=>
  *      array(5) {
@@ -196,11 +212,11 @@ static polaris::ReturnCode DoGetQuota(polaris::LimitApi *limit, zval *reqVal, zv
 
 /**
  * @brief 更新请求配额调用结果
- * 
- * @param limit 
- * @param reqVal 
- * @param waitTime 
- * @return polaris::ReturnCode 
+ *
+ * @param limit
+ * @param reqVal
+ * @param waitTime
+ * @return polaris::ReturnCode
  */
 static polaris::ReturnCode DoUpdateCallResult(polaris::LimitApi *limit, zval *reqVal, zval *returnVal)
 {
@@ -245,11 +261,11 @@ static polaris::ReturnCode DoUpdateCallResult(polaris::LimitApi *limit, zval *re
 
 /**
  * @brief 初始化配额窗口，可选调用，用于提前初始化配窗口减小首次配额延迟
- * 
- * @param limit 
- * @param reqVal 
- * @param waitTime 
- * @return polaris::ReturnCode 
+ *
+ * @param limit
+ * @param reqVal
+ * @param waitTime
+ * @return polaris::ReturnCode
  */
 static polaris::ReturnCode DoInitQuotaWindow(polaris::LimitApi *limit, zval *reqVal, zval *returnVal)
 {

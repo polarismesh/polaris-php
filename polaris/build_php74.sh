@@ -10,4 +10,4 @@ test_module=$1
 
 ./configure --with-php-config=/usr/local/php74/bin/php-config --with-polaris
 
-make && make install
+make #&& make install

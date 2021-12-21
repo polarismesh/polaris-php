@@ -1,3 +1,19 @@
+// Tencent is pleased to support the open source community by making polaris-go available.
+//
+// Copyright (C) 2019 THL A29 Limited, a Tencent company. All rights reserved.
+//
+// Licensed under the BSD 3-Clause License (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+// https://opensource.org/licenses/BSD-3-Clause
+//
+// Unless required by applicable law or agreed to in writing, software distributed
+// under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+// CONDITIONS OF ANY KIND, either express or implied. See the License for the
+// specific language governing permissionsr and limitations under the License.
+//
+
 /*
   +----------------------------------------------------------------------+
   | PHP Version 5                                                        |
@@ -40,8 +56,8 @@ static int le_polaris;
  */
 /* Remove comments and fill if you need to have entries in php.ini
 PHP_INI_BEGIN()
-    STD_PHP_INI_ENTRY("polaris.global_value",      "42", PHP_INI_ALL, OnUpdateLong, global_value, zend_polaris_globals, polaris_globals)
-    STD_PHP_INI_ENTRY("polaris.global_string", "foobar", PHP_INI_ALL, OnUpdateString, global_string, zend_polaris_globals, polaris_globals)
+	STD_PHP_INI_ENTRY("polaris.global_value",      "42", PHP_INI_ALL, OnUpdateLong, global_value, zend_polaris_globals, polaris_globals)
+	STD_PHP_INI_ENTRY("polaris.global_string", "foobar", PHP_INI_ALL, OnUpdateString, global_string, zend_polaris_globals, polaris_globals)
 PHP_INI_END()
 */
 /* }}} */
@@ -68,9 +84,9 @@ PHP_FUNCTION(confirm_polaris_compiled)
 	RETURN_STRINGL(strg, len);
 }
 /* }}} */
-/* The previous line is meant for vim and emacs, so it can correctly fold and 
-   unfold functions in source code. See the corresponding marks just before 
-   function definition, where the functions purpose is also documented. Please 
+/* The previous line is meant for vim and emacs, so it can correctly fold and
+   unfold functions in source code. See the corresponding marks just before
+   function definition, where the functions purpose is also documented. Please
    follow this convention for the convenience of others editing your code.
 */
 
