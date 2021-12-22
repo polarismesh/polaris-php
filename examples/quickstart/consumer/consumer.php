@@ -50,7 +50,7 @@ class HttpServer
 
     public function run()
     {
-        socket_bind($this->_socket, $this->ip, $this->port);
+        socket_bind($this->_socket, '0.0.0.0', $this->port);
         socket_listen($this->_socket, 16);
         while(true) {
             $socketAccept = socket_accept($this->_socket);
