@@ -17,8 +17,17 @@ instance
 
 ## How to build
 
-- Build the corresponding polaris-php plugin. [Build documentation](../../doc/HowToBuild.md)
+### Build the corresponding polaris-php plugin
 
+[Build documentation](../../doc/HowToBuild.md)
+
+### Build quickstart docker image
+
+- The polaris-php plugin for document building, [Build Document](../../doc/HowToBuild_ZH.md)
+- Move the polaris.so file to the directory of **consumer** and **provider**
+- Adjust the address of Polaris server in polaris.yaml
+- Mirror construction for the provider
+  - docker build --build-arg localHost={your provider ip}
 ## How to use
 
 ### Create Service
@@ -33,6 +42,7 @@ run php-server
 
 ```shell
 cd provider
+export PHP_PROVIDER_IP={your provider ip}
 php provider.php
 ```
 

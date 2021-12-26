@@ -1,3 +1,19 @@
+// Tencent is pleased to support the open source community by making polaris-go available.
+//
+// Copyright (C) 2019 THL A29 Limited, a Tencent company. All rights reserved.
+//
+// Licensed under the BSD 3-Clause License (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+// https://opensource.org/licenses/BSD-3-Clause
+//
+// Unless required by applicable law or agreed to in writing, software distributed
+// under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+// CONDITIONS OF ANY KIND, either express or implied. See the License for the
+// specific language governing permissionsr and limitations under the License.
+//
+
 /*
   +----------------------------------------------------------------------+
   | PHP Version 5                                                        |
@@ -38,21 +54,21 @@ extern zend_module_entry polaris_module_entry;
 #include "TSRM.h"
 #endif
 
-/* 
-  	Declare any global variables you may need between the BEGIN
-	and END macros here:     
+/*
+    Declare any global variables you may need between the BEGIN
+  and END macros here:
 ZEND_BEGIN_MODULE_GLOBALS(polaris)
-	long  global_value;
-	char *global_string;
+  long  global_value;
+  char *global_string;
 ZEND_END_MODULE_GLOBALS(polaris)
 */
 
-/* In every utility function you add that needs to use variables 
-   in php_polaris_globals, call TSRMLS_FETCH(); after declaring other 
+/* In every utility function you add that needs to use variables
+   in php_polaris_globals, call TSRMLS_FETCH(); after declaring other
    variables used by that function, or better yet, pass in TSRMLS_CC
    after the last function argument and declare your utility function
    with TSRMLS_DC after the last declared argument.  Always refer to
-   the globals in your function as POLARIS_G(variable).  You are 
+   the globals in your function as POLARIS_G(variable).  You are
    encouraged to rename these macros something shorter, see
    examples in any other php module directory.
 */

@@ -15,7 +15,17 @@ php-server 端示例，负责处理 socket 请求。启动时进程1负责处理
 
 ## 如何构建
 
-- 构建对应的 polaris-php 插件, [构建文档](../../doc/HowToBuild_ZH.md)
+### 构建对应的 polaris-php 插件
+
+[构建文档](../../doc/HowToBuild_ZH.md)
+
+### 构建quickstart的docker镜像
+
+- 构建对应的 polaris-php 插件，[构建文档](../../doc/HowToBuild_ZH.md)
+- 将 polaris.so 文件移动到**consumer**以及**provider**的目录下
+- 调整 polaris.yaml 中北极星 server 的地址
+- 对于 provider 镜像的构建
+  - docker build --build-arg localHost={your provider ip}
 
 ## 如何使用
 
@@ -31,6 +41,7 @@ php-server 端示例，负责处理 socket 请求。启动时进程1负责处理
 
 ```shell
 cd provider
+export PHP_PROVIDER_IP={your provider ip}
 php provider.php
 ```
 
